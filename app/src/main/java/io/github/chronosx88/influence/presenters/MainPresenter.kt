@@ -17,6 +17,7 @@
 package io.github.chronosx88.influence.presenters
 
 import android.content.Intent
+import io.github.chronosx88.influence.R
 import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.helpers.AppHelper
 import io.github.chronosx88.influence.helpers.LocalDBWrapper
@@ -36,7 +37,11 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
     }
 
     override fun startChatWithPeer(username: String) {
-        LocalDBWrapper.createChatEntry(username, username)
+        if(!username.contains("@")) {
+            view.showSnackbar(AppHelper.getContext().getString(R.string.invalid_jid_error))
+            return
+        }
+        LocalDBWrapper.createChatEntry(username, username.split("@")[0])
         EventBus.getDefault().post(NewChatEvent(username))
     }
 
