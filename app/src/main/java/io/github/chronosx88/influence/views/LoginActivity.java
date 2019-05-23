@@ -140,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
     private void doLogin() {
         loadingScreen(true);
         startService(new Intent(this, XMPPConnectionService.class));
-        ServiceConnection connection = new ServiceConnection() {
+        AppHelper.setServiceConnection(new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 XMPPConnectionService.XMPPServiceBinder binder = (XMPPConnectionService.XMPPServiceBinder) service;
@@ -151,9 +151,8 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
             public void onServiceDisconnected(ComponentName name) {
                 AppHelper.setXmppConnection(null);
             }
-        };
-        AppHelper.setServiceConnection(connection);
-        bindService(new Intent(this, XMPPConnectionService.class), connection, Context.BIND_AUTO_CREATE);
+        });
+        bindService(new Intent(this, XMPPConnectionService.class), AppHelper.getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
