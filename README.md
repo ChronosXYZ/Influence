@@ -1,7 +1,8 @@
 <p align="center">
 	<h1 align="center">Influence</h1>
 	<p align="center">
-    This is a decentralized messenger for Android, which work on top of TomP2P DHT.
+	<i>The free from influence</i> <br><br>
+    	This is a simple, beautiful XMPP/Jabber client for Android.
   </p>
  </p>
 
@@ -24,8 +25,8 @@
 ## Getting started
 1. Clone repo:
 ```bash
-$ git clone https://github.com/ChronosX88/Influence-android
-$ cd Influence-android
+$ git clone https://github.com/ChronosX88/Influence.git
+$ cd Influence
 ```
 2. Simply open project in Android Studio.
 
@@ -46,13 +47,13 @@ $ cd Influence-android
 
 ## Useful links
 
-- [TomP2P GitHub](https://github.com/tomp2p/TomP2P)
+- [Smack library GitHub](https://github.com/igniterealtime/Smack)
 
 <sub>[⇧ back to top](#contents)</sub>
 
 ## License
 
-This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 <sub>[⇧ back to top](#contents)</sub>
 
@@ -61,7 +62,7 @@ This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE
 ```txt
 Author : ChronosX88
 Email : chronosx88@gmail.com
-Github : https://github.com/ChronosX88/Influence-android.git
+Github : https://github.com/ChronosX88/Influence
 ```
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
