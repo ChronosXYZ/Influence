@@ -36,12 +36,11 @@ $ cd Influence
 
 ## Features
 - 1:1 chats
-- Decentralized message storage
-- Username system
-- Group chats [Soon]
-- Encryption [Soon]
-- Channels (like Telegram) [Soon]
-- Profile pictures [Soon]
+- Group chats *[coming soon]*
+- Avatars
+- Message history synchronization *[coming soon]*
+- Managing Roster *[coming soon]*
+- User presences *[coming soon]*
 
 <sub>[⇧ back to top](#contents)</sub>
 
