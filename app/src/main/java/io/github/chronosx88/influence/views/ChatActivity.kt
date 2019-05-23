@@ -97,12 +97,13 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
             chatAvatar!!.setImageBitmap(avatar)
         } else {
             val chatName = intent.getStringExtra("chatName")
+            val firstLetter = Character.toString(chatName[0].toUpperCase())
             chatAvatar!!.setImageDrawable(TextDrawable.builder()
                     .beginConfig()
                     .width(32)
                     .height(32)
                     .endConfig()
-                    .buildRound(Character.toString(chatName[0]), ColorGenerator.MATERIAL.getColor(Character.toString(chatName[0]))))
+                    .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)))
         }
     }
 }

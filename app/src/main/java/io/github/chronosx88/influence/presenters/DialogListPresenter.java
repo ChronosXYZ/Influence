@@ -55,12 +55,13 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     private CoreContracts.IChatListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
     private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>((imageView, url, payload) -> {
+        String firstLetter = Character.toString(Character.toUpperCase(url.charAt(0)));
         imageView.setImageDrawable(TextDrawable.builder()
                 .beginConfig()
                 .width(32)
                 .height(32)
                 .endConfig()
-                .buildRound(Character.toString(url.charAt(0)), ColorGenerator.MATERIAL.getColor(Character.toString(url.charAt(0)))));
+                .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)));
         CompletableFuture.supplyAsync(() -> {
             while (AppHelper.getXmppConnection() == null);
             while (AppHelper.getXmppConnection().isConnectionAlive() != true);
@@ -150,12 +151,14 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     @Override
     public void loadRemoteContactList() {
         CompletableFuture.supplyAsync(() -> logic.getRemoteContacts()).thenAccept((contacts) -> {
-            if(contacts != null) {
-                StreamSupport.stream(contacts).forEach(contact -> {
-                    LocalDBWrapper.createChatEntry(contact.getJid().asUnescapedString(), contact.getName() == null ? contact.getJid().asUnescapedString() : contact.getName());
-                    dialogListAdapter.upsertItem(new GenericDialog(LocalDBWrapper.getChatByChatID(contact.getJid().asUnescapedString())));
-                });
-            }
+            AppHelper.getMainUIThread().post(() -> {
+                if(contacts != null) {
+                    StreamSupport.stream(contacts).forEach(contact -> {
+                        LocalDBWrapper.createChatEntry(contact.getJid().asUnescapedString(), contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName());
+                        dialogListAdapter.upsertItem(new GenericDialog(LocalDBWrapper.getChatByChatID(contact.getJid().asUnescapedString())));
+                    });
+                }
+            });
         });
     }
 }
