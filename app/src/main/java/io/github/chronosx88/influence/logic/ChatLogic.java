@@ -22,6 +22,8 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.IOException;
+
 import io.github.chronosx88.influence.contracts.CoreContracts;
 import io.github.chronosx88.influence.helpers.AppHelper;
 import io.github.chronosx88.influence.helpers.LocalDBWrapper;
@@ -49,6 +51,13 @@ public class ChatLogic implements CoreContracts.IChatLogicContract {
                 return null;
             }
             AppHelper.getXmppConnection().sendMessage(jid, text);
+            while (!TrueTime.isInitialized()) {
+                try {
+                    TrueTime.build().initialize();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             long messageID = LocalDBWrapper.createMessageEntry(chatID, AppHelper.getJid(), TrueTime.now().getTime(), text, false, false);
             return LocalDBWrapper.getMessageByID(messageID);
         } else {

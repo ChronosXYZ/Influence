@@ -24,6 +24,8 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.jid.EntityBareJid;
 
+import io.github.chronosx88.influence.models.GenericMessage;
+import io.github.chronosx88.influence.models.appEvents.LastMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent;
 
 public class NetworkHandler implements IncomingChatMessageListener {
@@ -37,5 +39,6 @@ public class NetworkHandler implements IncomingChatMessageListener {
         long messageID = LocalDBWrapper.createMessageEntry(chat.getXmppAddressOfChatPartner().asUnescapedString(), from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
 
         EventBus.getDefault().post(new NewMessageEvent(chat.getXmppAddressOfChatPartner().toString(), messageID));
+        EventBus.getDefault().post(new LastMessageEvent(chat.getXmppAddressOfChatPartner().toString(), new GenericMessage(LocalDBWrapper.getMessageByID(messageID))));
     }
 }

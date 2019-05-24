@@ -31,7 +31,7 @@ public class GenericMessage implements IMessage {
 
     public GenericMessage(MessageEntity messageEntity) {
         this.messageID = messageEntity.messageID;
-        this.author = new GenericUser(messageEntity.senderJid, messageEntity.senderJid, "");
+        this.author = new GenericUser(messageEntity.senderJid, messageEntity.senderJid, messageEntity.senderJid);
         this.timestamp = messageEntity.timestamp;
         this.text = messageEntity.text;
     }

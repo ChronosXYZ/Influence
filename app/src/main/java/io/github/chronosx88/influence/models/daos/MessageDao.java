@@ -47,4 +47,7 @@ public interface MessageDao {
 
     @Query("DELETE FROM messages")
     void clearMessages();
+
+    @Query("SELECT messageID FROM messages WHERE jid = :chatID GROUP BY :chatID HAVING MAX(messageID)")
+    long getLastMessageByChatID(String chatID);
 }

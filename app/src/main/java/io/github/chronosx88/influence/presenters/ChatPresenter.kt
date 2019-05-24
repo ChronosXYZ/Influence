@@ -28,6 +28,7 @@ import io.github.chronosx88.influence.helpers.AppHelper
 import io.github.chronosx88.influence.helpers.LocalDBWrapper
 import io.github.chronosx88.influence.logic.ChatLogic
 import io.github.chronosx88.influence.models.GenericMessage
+import io.github.chronosx88.influence.models.appEvents.LastMessageEvent
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
@@ -81,7 +82,9 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
     override fun sendMessage(text: String): Boolean {
         val message: MessageEntity? = logic.sendMessage(text)
         if(message != null) {
-            chatAdapter.addToStart(GenericMessage(message), true)
+            val message = GenericMessage(message)
+            chatAdapter.addToStart(message, true)
+            EventBus.getDefault().post(LastMessageEvent(chatEntity!!.jid, message))
             return true
         }
         return false

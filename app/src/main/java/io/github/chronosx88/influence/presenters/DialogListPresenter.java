@@ -28,12 +28,15 @@ import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,9 +46,12 @@ import io.github.chronosx88.influence.helpers.AppHelper;
 import io.github.chronosx88.influence.helpers.LocalDBWrapper;
 import io.github.chronosx88.influence.logic.DialogListLogic;
 import io.github.chronosx88.influence.models.GenericDialog;
+import io.github.chronosx88.influence.models.GenericMessage;
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent;
+import io.github.chronosx88.influence.models.appEvents.LastMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.NewChatEvent;
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent;
+import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 import io.github.chronosx88.influence.views.ChatActivity;
 import java8.util.stream.StreamSupport;
 import java9.util.concurrent.CompletableFuture;
@@ -55,33 +61,42 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     private CoreContracts.IChatListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
     private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, (imageView, url, payload) -> {
-        String firstLetter = Character.toString(Character.toUpperCase(url.charAt(0)));
-        imageView.setImageDrawable(TextDrawable.builder()
-                .beginConfig()
-                .width(64)
-                .height(64)
-                .endConfig()
-                .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)));
-        CompletableFuture.supplyAsync(() -> {
-            while (AppHelper.getXmppConnection() == null);
-            while (AppHelper.getXmppConnection().isConnectionAlive() != true);
-            EntityBareJid jid = null;
-            try {
-                jid = JidCreate.entityBareFrom(url);
-            } catch (XmppStringprepException e) {
-                e.printStackTrace();
+        if(url.length() != 0) {
+            if(avatarsMap.containsKey(url)) {
+                byte[] avatarBytes = avatarsMap.get(url);
+                Bitmap avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
+                imageView.setImageBitmap(avatar);
+                return;
             }
-            return AppHelper.getXmppConnection().getAvatar(jid);
-        }).thenAccept((avatarBytes) -> {
-            AppHelper.getMainUIThread().post(() -> {
-                if(avatarBytes != null) {
-                    Bitmap avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
-                    imageView.setImageBitmap(avatar);
-                    avatarsMap.put(url, avatarBytes);
+            String firstLetter = Character.toString(Character.toUpperCase(url.charAt(0)));
+            imageView.setImageDrawable(TextDrawable.builder()
+                    .beginConfig()
+                    .width(64)
+                    .height(64)
+                    .endConfig()
+                    .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)));
+            CompletableFuture.supplyAsync(() -> {
+                while (AppHelper.getXmppConnection() == null);
+                while (AppHelper.getXmppConnection().isConnectionAlive() != true);
+                EntityBareJid jid = null;
+                try {
+                    jid = JidCreate.entityBareFrom(url);
+                } catch (XmppStringprepException e) {
+                    e.printStackTrace();
                 }
+                return AppHelper.getXmppConnection().getAvatar(jid);
+            }).thenAccept((avatarBytes) -> {
+                AppHelper.getMainUIThread().post(() -> {
+                    if(avatarBytes != null) {
+                        Bitmap avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
+                        imageView.setImageBitmap(avatar);
+                        avatarsMap.put(url, avatarBytes);
+                    }
+                });
             });
-        });
+        }
     });
+    private Comparator<GenericDialog> dialogComparator = (dialog1, dialog2) -> Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
 
     public DialogListPresenter(CoreContracts.IChatListViewContract view) {
         this.view = view;
@@ -104,18 +119,27 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         ArrayList<GenericDialog> dialogs = new ArrayList<>();
         StreamSupport.stream(logic.loadLocalChats())
                 .forEach(chatEntity -> dialogs.add(new GenericDialog(chatEntity)));
+        StreamSupport.stream(dialogs)
+                .forEach(dialog -> {
+                    MessageEntity messageEntity = LocalDBWrapper.getLastMessage(dialog.getId());
+                    if(messageEntity != null) {
+                        dialog.setLastMessage(new GenericMessage(messageEntity));
+                    }
+                });
         dialogListAdapter.setItems(dialogs);
+        dialogListAdapter.sort(dialogComparator);
         loadRemoteContactList();
-    }
-
-    @Override
-    public void onStart() {
         EventBus.getDefault().register(this);
     }
 
     @Override
+    public void onStart() {
+
+    }
+
+    @Override
     public void onStop() {
-        EventBus.getDefault().unregister(this);
+
     }
 
     @Override
@@ -154,11 +178,23 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
             AppHelper.getMainUIThread().post(() -> {
                 if(contacts != null) {
                     StreamSupport.stream(contacts).forEach(contact -> {
-                        LocalDBWrapper.createChatEntry(contact.getJid().asUnescapedString(), contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName());
-                        dialogListAdapter.upsertItem(new GenericDialog(LocalDBWrapper.getChatByChatID(contact.getJid().asUnescapedString())));
+                        String chatID = contact.getJid().asUnescapedString();
+                        LocalDBWrapper.createChatEntry(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName());
+                        GenericDialog dialog = new GenericDialog(LocalDBWrapper.getChatByChatID(chatID));
+                        MessageEntity messageEntity = LocalDBWrapper.getLastMessage(chatID);
+                        if(messageEntity != null) {
+                            dialog.setLastMessage(new GenericMessage(messageEntity));
+                        }
+                        dialogListAdapter.upsertItem(dialog);
                     });
                 }
             });
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLastMessage(LastMessageEvent event) {
+        dialogListAdapter.updateDialogWithMessage(event.chatID, event.message);
+        dialogListAdapter.sort(dialogComparator);
     }
 }

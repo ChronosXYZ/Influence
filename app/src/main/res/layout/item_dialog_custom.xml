@@ -73,7 +73,7 @@
             android:layout_toRightOf="@id/dialogAvatar"
             android:layout_toStartOf="@+id/dialogUnreadBubble">
 
-            <com.stfalcon.chatkit.utils.ShapeImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@id/dialogLastMessageUserAvatar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"

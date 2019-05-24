@@ -79,4 +79,9 @@ public class LocalDBWrapper {
         dbInstance.messageDao().clearMessages();
         dbInstance.chatDao().clearChats();
     }
+
+    public static MessageEntity getLastMessage(String chatID) {
+        long messageID = dbInstance.messageDao().getLastMessageByChatID(chatID);
+        return getMessageByID(messageID);
+    }
 }
