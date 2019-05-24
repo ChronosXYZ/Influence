@@ -16,11 +16,7 @@
 
 package io.github.chronosx88.influence.presenters
 
-import android.graphics.BitmapFactory
-import com.amulyakhare.textdrawable.TextDrawable
-import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.gson.Gson
-import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import io.github.chronosx88.influence.R
@@ -34,13 +30,9 @@ import io.github.chronosx88.influence.models.appEvents.LastMessageEvent
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
-import java9.util.concurrent.CompletableFuture
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.jxmpp.jid.EntityBareJid
-import org.jxmpp.jid.impl.JidCreate
-import org.jxmpp.stringprep.XmppStringprepException
 
 class ChatPresenter(private val view: CoreContracts.IChatViewContract, private val chatID: String) : CoreContracts.IChatPresenterContract {
     private val logic: CoreContracts.IChatLogicContract

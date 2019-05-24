@@ -52,11 +52,13 @@ public class ChatLogic implements CoreContracts.IChatLogicContract {
             }
             AppHelper.getXmppConnection().sendMessage(jid, text);
             while (!TrueTime.isInitialized()) {
-                try {
-                    TrueTime.build().initialize();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new Thread(() -> {
+                    try {
+                        TrueTime.build().initialize();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
             long messageID = LocalDBWrapper.createMessageEntry(chatID, AppHelper.getJid(), TrueTime.now().getTime(), text, false, false);
             return LocalDBWrapper.getMessageByID(messageID);
