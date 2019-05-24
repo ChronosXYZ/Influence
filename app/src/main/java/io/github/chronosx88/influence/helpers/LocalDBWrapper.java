@@ -84,4 +84,8 @@ public class LocalDBWrapper {
         long messageID = dbInstance.messageDao().getLastMessageByChatID(chatID);
         return getMessageByID(messageID);
     }
+
+    public static void updateChatUnreadMessagesCount(String chatID, int unreadMessagesCount) {
+        dbInstance.chatDao().updateUnreadMessagesCount(chatID, unreadMessagesCount);
+    }
 }

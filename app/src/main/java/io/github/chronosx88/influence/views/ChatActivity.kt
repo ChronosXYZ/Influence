@@ -84,6 +84,7 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
     override fun onDestroy() {
         super.onDestroy()
         presenter!!.onDestroy()
+        presenter = null
     }
 
     override fun setAdapter(adapter: MessagesListAdapter<GenericMessage>) {

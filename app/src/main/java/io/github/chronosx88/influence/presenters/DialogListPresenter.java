@@ -17,27 +17,17 @@
 package io.github.chronosx88.influence.presenters;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.jivesoftware.smack.roster.RosterEntry;
-import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.chronosx88.influence.R;
@@ -115,6 +105,8 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         intent.putExtra("chatName", LocalDBWrapper.getChatByChatID(chatID).chatName);
         intent.putExtra("chatAvatar", AppHelper.avatarsCache.get(chatID));
         view.startActivity(intent);
+        setUnreadMessagesCount(chatID, 0);
+        LocalDBWrapper.updateChatUnreadMessagesCount(chatID, 0);
     }
 
     @Subscribe
@@ -161,6 +153,17 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLastMessage(LastMessageEvent event) {
         dialogListAdapter.updateDialogWithMessage(event.chatID, event.message);
+        GenericDialog dialog = new GenericDialog(LocalDBWrapper.getChatByChatID(event.chatID));
+        dialog.setLastMessage(event.message);
+        dialogListAdapter.updateItemById(dialog);
         dialogListAdapter.sort(dialogComparator);
+    }
+
+    private void setUnreadMessagesCount(String chatID, int unreadMessagesCount) {
+        GenericDialog dialog = dialogListAdapter.getItemById(chatID);
+        if(dialog != null) {
+            dialog.setUnreadMessagesCount(unreadMessagesCount);
+            dialogListAdapter.updateItemById(dialog);
+        }
     }
 }

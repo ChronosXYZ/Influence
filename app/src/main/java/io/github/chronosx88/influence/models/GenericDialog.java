@@ -75,4 +75,8 @@ public class GenericDialog implements IDialog {
     public int getUnreadCount() {
         return unreadMessagesCount;
     }
+
+    public void setUnreadMessagesCount(int unreadMessagesCount) {
+        this.unreadMessagesCount = unreadMessagesCount;
+    }
 }

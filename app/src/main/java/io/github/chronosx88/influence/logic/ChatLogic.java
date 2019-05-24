@@ -33,12 +33,10 @@ import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 public class ChatLogic implements CoreContracts.IChatLogicContract {
     private String chatID;
     private ChatEntity chatEntity;
-    //private KeyPairManager keyPairManager;
 
     public ChatLogic(ChatEntity chatEntity) {
         this.chatEntity = chatEntity;
         this.chatID = chatEntity.jid;
-        //this.keyPairManager = new KeyPairManager();
     }
 
     @Override

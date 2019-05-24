@@ -74,7 +74,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
     }
 
     override fun onDestroy() {
-        //
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -82,6 +82,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         if(event.chatID.equals(chatEntity!!.jid)) {
             val messageID = event.messageID
             chatAdapter.addToStart(GenericMessage(LocalDBWrapper.getMessageByID(messageID)), true)
+            LocalDBWrapper.updateChatUnreadMessagesCount(chatEntity.jid, 0)
         }
     }
 }

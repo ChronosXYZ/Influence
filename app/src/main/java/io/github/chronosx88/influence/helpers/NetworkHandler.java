@@ -33,12 +33,15 @@ public class NetworkHandler implements IncomingChatMessageListener {
 
     @Override
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+        String chatID = chat.getXmppAddressOfChatPartner().asUnescapedString();
         if(LocalDBWrapper.getChatByChatID(from.asEntityBareJidString()) == null) {
-            LocalDBWrapper.createChatEntry(chat.getXmppAddressOfChatPartner().asUnescapedString(), chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString());
+            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString());
         }
-        long messageID = LocalDBWrapper.createMessageEntry(chat.getXmppAddressOfChatPartner().asUnescapedString(), from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
+        long messageID = LocalDBWrapper.createMessageEntry(chatID, from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
+        int newUnreadMessagesCount = LocalDBWrapper.getChatByChatID(chatID).unreadMessagesCount + 1;
+        LocalDBWrapper.updateChatUnreadMessagesCount(chatID, newUnreadMessagesCount);
 
-        EventBus.getDefault().post(new NewMessageEvent(chat.getXmppAddressOfChatPartner().toString(), messageID));
-        EventBus.getDefault().post(new LastMessageEvent(chat.getXmppAddressOfChatPartner().toString(), new GenericMessage(LocalDBWrapper.getMessageByID(messageID))));
+        EventBus.getDefault().post(new NewMessageEvent(chatID, messageID));
+        EventBus.getDefault().post(new LastMessageEvent(chatID, new GenericMessage(LocalDBWrapper.getMessageByID(messageID))));
     }
 }

@@ -44,4 +44,7 @@ public interface ChatDao {
 
     @Query("DELETE FROM chats")
     void clearChats();
+
+    @Query("UPDATE chats SET unreadMessagesCount = :unreadMessagesCount WHERE jid = :chatID")
+    void updateUnreadMessagesCount(String chatID, int unreadMessagesCount);
 }
