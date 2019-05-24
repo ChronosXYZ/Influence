@@ -58,6 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:textAutoLink="all"
+        app:outcomingTextLinkColor="@android:color/holo_green_light"
         android:layout_above="@+id/message_input"/>
 
     <View
