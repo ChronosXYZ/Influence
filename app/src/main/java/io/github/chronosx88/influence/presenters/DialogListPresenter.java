@@ -56,6 +56,11 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         if(dialog2.getLastMessage() != null && dialog1.getLastMessage() != null) {
             return Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
         }
+        if(dialog2.getLastMessage() != null) {
+            return 1;
+        } else if(dialog1.getLastMessage() != null) {
+            return -1;
+        }
         return 0;
     };
 
