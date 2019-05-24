@@ -27,6 +27,7 @@ import android.os.Looper;
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 
 import java.io.IOException;
 
@@ -74,6 +75,13 @@ public class XMPPConnectionService extends Service {
                 if(connection != null) {
                     thread.interrupt();
                     thread = null;
+                    try {
+                        connection.getConnection().sendStanza(new Presence(Presence.Type.unavailable));
+                    } catch (SmackException.NotConnectedException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     connection.disconnect();
                     connection = null;
                 }

@@ -31,10 +31,12 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jxmpp.jid.EntityBareJid;
 
@@ -53,6 +55,7 @@ public class XMPPConnection implements ConnectionListener {
     private NetworkHandler networkHandler;
     private Context context;
     private Roster roster;
+    private MamManager mamManager;
 
     public enum ConnectionState {
         CONNECTED,
@@ -113,6 +116,16 @@ public class XMPPConnection implements ConnectionListener {
             ReconnectionManager.setEnabledPerDefault(true);
             reconnectionManager.enableAutomaticReconnection();
             roster = roster.getInstanceFor(connection);
+            roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+            mamManager = MamManager.getInstanceFor(connection);
+            try {
+                if(mamManager.isSupported()) {
+                    MamManager.getInstanceFor(connection).enableMamForAllMessages();
+                }
+                connection.sendStanza(new Presence(Presence.Type.available));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
