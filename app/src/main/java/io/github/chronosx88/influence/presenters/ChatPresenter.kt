@@ -28,11 +28,16 @@ import io.github.chronosx88.influence.logic.ChatLogic
 import io.github.chronosx88.influence.models.GenericMessage
 import io.github.chronosx88.influence.models.appEvents.LastMessageEvent
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent
+import io.github.chronosx88.influence.models.appEvents.UserPresenceChangedEvent
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
+import java9.util.concurrent.CompletableFuture
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import kotlin.math.log
 
 class ChatPresenter(private val view: CoreContracts.IChatViewContract, private val chatID: String) : CoreContracts.IChatPresenterContract {
     private val logic: CoreContracts.IChatLogicContract
@@ -48,6 +53,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         holdersConfig.setIncomingTextLayout(R.layout.item_incoming_text_message_custom)
         chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader())
         view.setAdapter(chatAdapter)
+        getUserStatus()
         EventBus.getDefault().register(this)
     }
 
@@ -83,6 +89,27 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
             val messageID = event.messageID
             chatAdapter.addToStart(GenericMessage(LocalDBWrapper.getMessageByID(messageID)), true)
             LocalDBWrapper.updateChatUnreadMessagesCount(chatEntity.jid, 0)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public fun onPresenceChanged(event: UserPresenceChangedEvent) {
+        if(event.jid == (chatID)) {
+            if(event.status) view.setUserStatus(AppHelper.getContext().getString(R.string.online)) else view.setUserStatus(AppHelper.getContext().getString(R.string.offline))
+        }
+    }
+
+    private fun getUserStatus() {
+        CompletableFuture.supplyAsync {
+            return@supplyAsync logic.getUserStatus()
+        }.thenAccept { status ->
+            AppHelper.getMainUIThread().post({
+                if(status) {
+                    view.setUserStatus(AppHelper.getContext().getString(R.string.online))
+                } else {
+                    view.setUserStatus(AppHelper.getContext().getString(R.string.offline))
+                }
+            })
         }
     }
 }

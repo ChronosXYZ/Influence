@@ -23,4 +23,6 @@
     <string name="logout">Log out from account</string>
     <string name="sign_in_button">Sign In</string>
     <string name="invalid_jid_error">Invalid JabberID!</string>
+    <string name="offline">Offline</string>
+    <string name="online">Online</string>
 </resources>

@@ -78,6 +78,7 @@ interface CoreContracts {
 
     interface IChatLogicContract {
         fun sendMessage(text: String): MessageEntity?
+        fun getUserStatus(): Boolean
     }
 
     interface IChatPresenterContract {
@@ -88,6 +89,7 @@ interface CoreContracts {
 
     interface IChatViewContract {
         fun setAdapter(adapter: MessagesListAdapter<GenericMessage>)
+        fun setUserStatus(status: String)
     }
 
     // -----SettingsFragment-----

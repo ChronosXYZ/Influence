@@ -52,7 +52,12 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     private CoreContracts.IChatListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
     private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, new AvatarImageLoader());
-    private Comparator<GenericDialog> dialogComparator = (dialog1, dialog2) -> Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
+    private Comparator<GenericDialog> dialogComparator = (dialog1, dialog2) -> {
+        if(dialog2.getLastMessage() != null && dialog1.getLastMessage() != null) {
+            return Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
+        }
+        return 0;
+    };
 
     public DialogListPresenter(CoreContracts.IChatListViewContract view) {
         this.view = view;

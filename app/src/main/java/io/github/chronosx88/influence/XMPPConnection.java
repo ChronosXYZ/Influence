@@ -38,7 +38,9 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
 
 import java.io.IOException;
 import java.util.Set;
@@ -117,6 +119,7 @@ public class XMPPConnection implements ConnectionListener {
             reconnectionManager.enableAutomaticReconnection();
             roster = roster.getInstanceFor(connection);
             roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+            roster.addPresenceEventListener(networkHandler);
             mamManager = MamManager.getInstanceFor(connection);
             try {
                 if(mamManager.isSupported()) {
@@ -216,5 +219,9 @@ public class XMPPConnection implements ConnectionListener {
         } else {
             return false;
         }
+    }
+
+    public Presence getUserPresence(BareJid jid) {
+        return roster.getPresence(jid);
     }
 }

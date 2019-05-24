@@ -18,6 +18,7 @@ package io.github.chronosx88.influence.logic;
 
 import com.instacart.library.truetime.TrueTime;
 
+import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -58,10 +59,26 @@ public class ChatLogic implements CoreContracts.IChatLogicContract {
                     }
                 }).start();
             }
-            long messageID = LocalDBWrapper.createMessageEntry(chatID, AppHelper.getJid(), TrueTime.now().getTime(), text, false, false);
+            long messageID = LocalDBWrapper.createMessageEntry(chatID, AppHelper.getJid(), TrueTime.now().getTime(), text, true, false);
             return LocalDBWrapper.getMessageByID(messageID);
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean getUserStatus() {
+        if(AppHelper.getXmppConnection() != null) {
+            if(AppHelper.getXmppConnection().isConnectionAlive()) {
+                Presence presence = null;
+                try {
+                    presence = AppHelper.getXmppConnection().getUserPresence(JidCreate.bareFrom(chatID));
+                } catch (XmppStringprepException e) {
+                    e.printStackTrace();
+                }
+                return presence.isAvailable();
+            }
+        }
+        return false;
     }
 }

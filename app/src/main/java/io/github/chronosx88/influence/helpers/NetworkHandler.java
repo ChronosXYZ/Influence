@@ -19,16 +19,23 @@ package io.github.chronosx88.influence.helpers;
 import com.instacart.library.truetime.TrueTime;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.PresenceListener;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.PresenceEventListener;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 
 import io.github.chronosx88.influence.models.GenericMessage;
 import io.github.chronosx88.influence.models.appEvents.LastMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent;
+import io.github.chronosx88.influence.models.appEvents.UserPresenceChangedEvent;
 
-public class NetworkHandler implements IncomingChatMessageListener {
+public class NetworkHandler implements IncomingChatMessageListener, PresenceEventListener {
     private final static String LOG_TAG = "NetworkHandler";
 
     @Override
@@ -43,5 +50,30 @@ public class NetworkHandler implements IncomingChatMessageListener {
 
         EventBus.getDefault().post(new NewMessageEvent(chatID, messageID));
         EventBus.getDefault().post(new LastMessageEvent(chatID, new GenericMessage(LocalDBWrapper.getMessageByID(messageID))));
+    }
+
+    @Override
+    public void presenceAvailable(FullJid address, Presence availablePresence) {
+        EventBus.getDefault().post(new UserPresenceChangedEvent(address.asBareJid().asUnescapedString(), availablePresence.isAvailable()));
+    }
+
+    @Override
+    public void presenceUnavailable(FullJid address, Presence presence) {
+        EventBus.getDefault().post(new UserPresenceChangedEvent(address.asBareJid().asUnescapedString(), presence.isAvailable()));
+    }
+
+    @Override
+    public void presenceError(Jid address, Presence errorPresence) {
+        EventBus.getDefault().post(new UserPresenceChangedEvent(address.asBareJid().asUnescapedString(), errorPresence.isAvailable()));
+    }
+
+    @Override
+    public void presenceSubscribed(BareJid address, Presence subscribedPresence) {
+
+    }
+
+    @Override
+    public void presenceUnsubscribed(BareJid address, Presence unsubscribedPresence) {
+
     }
 }

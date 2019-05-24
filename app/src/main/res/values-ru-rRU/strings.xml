@@ -24,4 +24,6 @@
     <string name="logout">Выйти из аккаунта</string>
     <string name="sign_in_button">Войти</string>
     <string name="invalid_jid_error">Неверный JabberID!</string>
+    <string name="offline">Не в сети</string>
+    <string name="online">В сети</string>
 </resources>

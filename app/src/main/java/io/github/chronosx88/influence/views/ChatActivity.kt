@@ -38,12 +38,14 @@ import io.github.chronosx88.influence.models.GenericMessage
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
 import io.github.chronosx88.influence.presenters.ChatPresenter
 import kotlinx.android.synthetic.main.activity_chat.view.*
+import org.jetbrains.anko.find
 
 class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
     private var messageList: MessagesList? = null
     private var messageInput: MessageInput? = null
     private var chatNameTextView: TextView? = null
     private var chatAvatar: ImageView? = null
+    private var userStatus: TextView? = null
     private var presenter: ChatPresenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +61,8 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
         supportActionBar!!.setHomeButtonEnabled(true)
         messageList = findViewById(R.id.messages_list)
         messageList!!.layoutManager = LinearLayoutManager(this)
-        chatNameTextView = findViewById(R.id.appbar_username)
+        chatNameTextView = find(R.id.appbar_username)
+        userStatus = find(R.id.user_status_text)
         chatAvatar = findViewById(R.id.profile_image_chat_activity)
         messageInput = findViewById(R.id.message_input)
         messageInput!!.setInputListener {
@@ -106,5 +109,9 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
                     .endConfig()
                     .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)))
         }
+    }
+
+    override fun setUserStatus(status: String) {
+        userStatus!!.text = status
     }
 }
