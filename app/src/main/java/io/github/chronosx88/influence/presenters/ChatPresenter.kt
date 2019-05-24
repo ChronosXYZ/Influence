@@ -21,10 +21,12 @@ import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.gson.Gson
 import com.stfalcon.chatkit.commons.ImageLoader
+import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import io.github.chronosx88.influence.R
 import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.helpers.AppHelper
+import io.github.chronosx88.influence.helpers.AvatarImageLoader
 import io.github.chronosx88.influence.helpers.LocalDBWrapper
 import io.github.chronosx88.influence.logic.ChatLogic
 import io.github.chronosx88.influence.models.GenericMessage
@@ -50,31 +52,9 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         this.logic = ChatLogic(LocalDBWrapper.getChatByChatID(chatID)!!)
         this.chatEntity = LocalDBWrapper.getChatByChatID(chatID)
         gson = Gson()
-        chatAdapter = MessagesListAdapter(AppHelper.getJid(), ImageLoader { imageView, url, _ ->
-            val firstLetter = Character.toString(Character.toUpperCase(url!!.get(0)))
-            imageView.setImageDrawable(TextDrawable.builder()
-                    .beginConfig()
-                    .width(64)
-                    .height(64)
-                    .endConfig()
-                    .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)))
-            CompletableFuture.supplyAsync { while (AppHelper.getXmppConnection() == null) ;
-                while (!AppHelper.getXmppConnection().isConnectionAlive) ;
-                var jid: EntityBareJid? = null
-                try {
-                    jid = JidCreate.entityBareFrom(url)
-                } catch (e: XmppStringprepException) {
-                    e.printStackTrace()
-                }
-
-                AppHelper.getXmppConnection().getAvatar(jid) }.thenAccept { avatarBytes -> AppHelper.getMainUIThread().post {
-                    if (avatarBytes != null) {
-                        val avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.size)
-                        imageView.setImageBitmap(avatar)
-                    }
-                }
-            }
-        })
+        val holdersConfig = MessageHolders()
+        holdersConfig.setIncomingTextLayout(R.layout.item_incoming_text_message_custom)
+        chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader())
         view.setAdapter(chatAdapter)
         EventBus.getDefault().register(this)
     }

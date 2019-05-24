@@ -30,6 +30,8 @@ import androidx.room.Room;
 import com.instacart.library.truetime.TrueTime;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.chronosx88.influence.LoginCredentials;
 import io.github.chronosx88.influence.XMPPConnection;
@@ -49,6 +51,7 @@ public class AppHelper extends MultiDexApplication {
     private static LoginCredentials currentLoginCredentials;
     private static Handler mainUIThreadHandler;
     private static ServiceConnection serviceConnection;
+    public final static Map<String, byte[]> avatarsCache = new ConcurrentHashMap<>();
 
     @Override
     public void onCreate() {
@@ -107,12 +110,14 @@ public class AppHelper extends MultiDexApplication {
     private static void initTrueTime() {
         new Thread(() -> {
             boolean isTrueTimeIsOn = false;
-            while(!isTrueTimeIsOn) {
+            int count = 0;
+            while(!isTrueTimeIsOn && count <= 10) {
                 try {
                     TrueTime.build().withNtpHost(DEFAULT_NTP_SERVER).initialize();
                     isTrueTimeIsOn = true;
                 } catch (IOException e) {
                     e.printStackTrace();
+                    count++;
                 }
             }
         }).start();

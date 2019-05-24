@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.github.chronosx88.influence.R;
 import io.github.chronosx88.influence.contracts.CoreContracts;
 import io.github.chronosx88.influence.helpers.AppHelper;
+import io.github.chronosx88.influence.helpers.AvatarImageLoader;
 import io.github.chronosx88.influence.helpers.LocalDBWrapper;
 import io.github.chronosx88.influence.logic.DialogListLogic;
 import io.github.chronosx88.influence.models.GenericDialog;
@@ -60,42 +61,7 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     private ConcurrentHashMap<String, byte[]> avatarsMap = new ConcurrentHashMap<>();
     private CoreContracts.IChatListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
-    private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, (imageView, url, payload) -> {
-        if(url.length() != 0) {
-            if(avatarsMap.containsKey(url)) {
-                byte[] avatarBytes = avatarsMap.get(url);
-                Bitmap avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
-                imageView.setImageBitmap(avatar);
-                return;
-            }
-            String firstLetter = Character.toString(Character.toUpperCase(url.charAt(0)));
-            imageView.setImageDrawable(TextDrawable.builder()
-                    .beginConfig()
-                    .width(64)
-                    .height(64)
-                    .endConfig()
-                    .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)));
-            CompletableFuture.supplyAsync(() -> {
-                while (AppHelper.getXmppConnection() == null);
-                while (AppHelper.getXmppConnection().isConnectionAlive() != true);
-                EntityBareJid jid = null;
-                try {
-                    jid = JidCreate.entityBareFrom(url);
-                } catch (XmppStringprepException e) {
-                    e.printStackTrace();
-                }
-                return AppHelper.getXmppConnection().getAvatar(jid);
-            }).thenAccept((avatarBytes) -> {
-                AppHelper.getMainUIThread().post(() -> {
-                    if(avatarBytes != null) {
-                        Bitmap avatar = BitmapFactory.decodeByteArray(avatarBytes, 0, avatarBytes.length);
-                        imageView.setImageBitmap(avatar);
-                        avatarsMap.put(url, avatarBytes);
-                    }
-                });
-            });
-        }
-    });
+    private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, new AvatarImageLoader());
     private Comparator<GenericDialog> dialogComparator = (dialog1, dialog2) -> Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
 
     public DialogListPresenter(CoreContracts.IChatListViewContract view) {
@@ -147,7 +113,7 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         Intent intent = new Intent(AppHelper.getContext(), ChatActivity.class);
         intent.putExtra("chatID", chatID);
         intent.putExtra("chatName", LocalDBWrapper.getChatByChatID(chatID).chatName);
-        intent.putExtra("chatAvatar", avatarsMap.get(chatID));
+        intent.putExtra("chatAvatar", AppHelper.avatarsCache.get(chatID));
         view.startActivity(intent);
     }
 
