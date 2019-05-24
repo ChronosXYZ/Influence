@@ -57,6 +57,7 @@
         android:id="@+id/messages_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:textAutoLink="all"
         android:layout_above="@+id/message_input"/>
 
     <View
