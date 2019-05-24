@@ -17,6 +17,8 @@
 package io.github.chronosx88.influence.presenters
 
 import android.graphics.BitmapFactory
+import com.amulyakhare.textdrawable.TextDrawable
+import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.gson.Gson
 import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessagesListAdapter
@@ -48,7 +50,13 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         this.chatEntity = LocalDBWrapper.getChatByChatID(chatID)
         gson = Gson()
         chatAdapter = MessagesListAdapter(AppHelper.getJid(), ImageLoader { imageView, url, _ ->
-            imageView.setImageResource(R.mipmap.ic_launcher)
+            val firstLetter = Character.toString(Character.toUpperCase(url!!.get(0)))
+            imageView.setImageDrawable(TextDrawable.builder()
+                    .beginConfig()
+                    .width(64)
+                    .height(64)
+                    .endConfig()
+                    .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)))
             CompletableFuture.supplyAsync { while (AppHelper.getXmppConnection() == null) ;
                 while (!AppHelper.getXmppConnection().isConnectionAlive) ;
                 var jid: EntityBareJid? = null

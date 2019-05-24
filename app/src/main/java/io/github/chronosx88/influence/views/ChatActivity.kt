@@ -100,8 +100,8 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
             val firstLetter = Character.toString(chatName[0].toUpperCase())
             chatAvatar!!.setImageDrawable(TextDrawable.builder()
                     .beginConfig()
-                    .width(32)
-                    .height(32)
+                    .width(64)
+                    .height(64)
                     .endConfig()
                     .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)))
         }

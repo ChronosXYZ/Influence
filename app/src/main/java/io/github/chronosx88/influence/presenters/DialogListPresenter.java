@@ -54,12 +54,12 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
     private ConcurrentHashMap<String, byte[]> avatarsMap = new ConcurrentHashMap<>();
     private CoreContracts.IChatListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
-    private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>((imageView, url, payload) -> {
+    private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, (imageView, url, payload) -> {
         String firstLetter = Character.toString(Character.toUpperCase(url.charAt(0)));
         imageView.setImageDrawable(TextDrawable.builder()
                 .beginConfig()
-                .width(32)
-                .height(32)
+                .width(64)
+                .height(64)
                 .endConfig()
                 .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(firstLetter)));
         CompletableFuture.supplyAsync(() -> {
