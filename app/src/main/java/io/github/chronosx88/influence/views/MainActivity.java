@@ -164,4 +164,10 @@ public class MainActivity extends AppCompatActivity implements CoreContracts.IMa
     public void finishActivity() {
         finish();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
+    }
 }

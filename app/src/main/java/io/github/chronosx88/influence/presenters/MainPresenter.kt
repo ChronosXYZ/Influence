@@ -25,9 +25,13 @@ import io.github.chronosx88.influence.logic.MainLogic
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent
 import io.github.chronosx88.influence.models.appEvents.NewChatEvent
 import io.github.chronosx88.influence.views.LoginActivity
+import java9.util.concurrent.CompletableFuture
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.jivesoftware.smack.packet.Presence
 
 class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreContracts.IMainPresenterContract {
     private val logic: CoreContracts.IMainLogicContract = MainLogic()
@@ -54,6 +58,13 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
                 AppHelper.getContext().startActivity(intent)
                 view.finishActivity()
             }
+
+            AuthenticationStatusEvent.CONNECT_AND_LOGIN_SUCCESSFUL -> {
+                GlobalScope.launch {
+                    if(AppHelper.getXmppConnection().isConnectionAlive)
+                        AppHelper.getXmppConnection().sendUserPresence(Presence(Presence.Type.available))
+                }
+            }
         }
     }
 
@@ -67,5 +78,14 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
 
     override fun onStop() {
         EventBus.getDefault().unregister(this)
+    }
+
+    override fun onDestroy() {
+        GlobalScope.launch {
+            if(AppHelper.getXmppConnection() != null) {
+                if(AppHelper.getXmppConnection().isConnectionAlive)
+                    AppHelper.getXmppConnection().sendUserPresence(Presence(Presence.Type.unavailable))
+            }
+        }
     }
 }

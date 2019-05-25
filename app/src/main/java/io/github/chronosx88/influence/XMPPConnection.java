@@ -125,7 +125,6 @@ public class XMPPConnection implements ConnectionListener {
                 if(mamManager.isSupported()) {
                     MamManager.getInstanceFor(connection).enableMamForAllMessages();
                 }
-                connection.sendStanza(new Presence(Presence.Type.available));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -223,5 +222,19 @@ public class XMPPConnection implements ConnectionListener {
 
     public Presence getUserPresence(BareJid jid) {
         return roster.getPresence(jid);
+    }
+
+    public void sendUserPresence(Presence presence) {
+        if(connection != null) {
+            if(isConnectionAlive()) {
+                try {
+                    connection.sendStanza(presence);
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

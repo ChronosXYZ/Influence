@@ -66,6 +66,7 @@ interface CoreContracts {
         fun logoutFromAccount()
         fun onStart()
         fun onStop()
+        fun onDestroy()
     }
 
     interface IMainViewContract {
