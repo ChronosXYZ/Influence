@@ -124,7 +124,7 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         dialogListAdapter.upsertItem(new GenericDialog(LocalDBWrapper.getChatByChatID(event.chatID)));
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessage(NewMessageEvent event) {
         String chatID = event.chatID;
         GenericDialog dialog = dialogListAdapter.getItemById(chatID);
@@ -154,6 +154,7 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
                             dialog.setLastMessage(new GenericMessage(messageEntity));
                         }
                         dialogListAdapter.upsertItem(dialog);
+                        dialogListAdapter.notifyDataSetChanged();
                     });
                 }
             });
