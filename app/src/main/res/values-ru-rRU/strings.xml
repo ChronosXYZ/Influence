@@ -26,4 +26,5 @@
     <string name="invalid_jid_error">Неверный JabberID!</string>
     <string name="offline">Не в сети</string>
     <string name="online">В сети</string>
+    <string name="clear_chat">Очистить чат</string>
 </resources>

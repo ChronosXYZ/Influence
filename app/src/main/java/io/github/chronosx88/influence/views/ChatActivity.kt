@@ -19,6 +19,7 @@ package io.github.chronosx88.influence.views
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
@@ -34,6 +35,7 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter
 import io.github.chronosx88.influence.R
 import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.helpers.AppHelper
+import io.github.chronosx88.influence.helpers.LocalDBWrapper
 import io.github.chronosx88.influence.models.GenericMessage
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
 import io.github.chronosx88.influence.presenters.ChatPresenter
@@ -59,12 +61,12 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
         supportActionBar!!.setTitle("")
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
-        messageList = findViewById(R.id.messages_list)
+        messageList = find(R.id.messages_list)
         messageList!!.layoutManager = LinearLayoutManager(this)
         chatNameTextView = find(R.id.appbar_username)
         userStatus = find(R.id.user_status_text)
-        chatAvatar = findViewById(R.id.profile_image_chat_activity)
-        messageInput = findViewById(R.id.message_input)
+        chatAvatar = find(R.id.profile_image_chat_activity)
+        messageInput = find(R.id.message_input)
         messageInput!!.setInputListener {
             presenter!!.sendMessage(it.toString())
         }
@@ -81,6 +83,7 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
                 return true
             }
         }
+        presenter!!.onOptionsItemSelected(item)
         return super.onOptionsItemSelected(item)
     }
 
@@ -114,4 +117,11 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
     override fun setUserStatus(status: String) {
         userStatus!!.text = status
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.chat_activity_menu, menu)
+        return true
+    }
+
+
 }

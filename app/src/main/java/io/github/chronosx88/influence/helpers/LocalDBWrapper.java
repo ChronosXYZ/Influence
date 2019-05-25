@@ -88,4 +88,8 @@ public class LocalDBWrapper {
     public static void updateChatUnreadMessagesCount(String chatID, int unreadMessagesCount) {
         dbInstance.chatDao().updateUnreadMessagesCount(chatID, unreadMessagesCount);
     }
+
+    public static void clearChat(String chatID) {
+        dbInstance.messageDao().clearMessagesByChatID(chatID);
+    }
 }

@@ -16,6 +16,7 @@
 
 package io.github.chronosx88.influence.presenters
 
+import android.view.MenuItem
 import com.google.gson.Gson
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
@@ -110,6 +111,16 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
                     view.setUserStatus(AppHelper.getContext().getString(R.string.offline))
                 }
             })
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) {
+        when (item.itemId) {
+            R.id.menu_clear_chat -> {
+                LocalDBWrapper.clearChat(chatID)
+                chatAdapter.clear()
+                EventBus.getDefault().post(LastMessageEvent(chatID, null))
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ package io.github.chronosx88.influence.contracts
 
 import android.content.Context
 import android.content.Intent
+import android.view.MenuItem
 import com.stfalcon.chatkit.dialogs.DialogsListAdapter
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 
@@ -86,6 +87,7 @@ interface CoreContracts {
         fun sendMessage(text: String): Boolean
         fun loadLocalMessages()
         fun onDestroy()
+        fun onOptionsItemSelected(item: MenuItem)
     }
 
     interface IChatViewContract {
