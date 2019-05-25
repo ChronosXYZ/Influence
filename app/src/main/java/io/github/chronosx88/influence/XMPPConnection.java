@@ -128,6 +128,9 @@ public class XMPPConnection implements ConnectionListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            if(AppHelper.isIsMainActivityDestroyed()) {
+                sendUserPresence(new Presence(Presence.Type.unavailable));
+            }
         }
     }
 

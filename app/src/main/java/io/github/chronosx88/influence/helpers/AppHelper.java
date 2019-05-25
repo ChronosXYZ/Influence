@@ -51,6 +51,7 @@ public class AppHelper extends MultiDexApplication {
     private static LoginCredentials currentLoginCredentials;
     private static Handler mainUIThreadHandler;
     private static ServiceConnection serviceConnection;
+    private static boolean isMainActivityDestroyed = true;
     public final static Map<String, byte[]> avatarsCache = new ConcurrentHashMap<>();
 
     @Override
@@ -139,5 +140,13 @@ public class AppHelper extends MultiDexApplication {
 
     public static ServiceConnection getServiceConnection() {
         return serviceConnection;
+    }
+
+    public static boolean isIsMainActivityDestroyed() {
+        return isMainActivityDestroyed;
+    }
+
+    public static void setIsMainActivityDestroyed(boolean isMainActivityDestroyed) {
+        AppHelper.isMainActivityDestroyed = isMainActivityDestroyed;
     }
 }

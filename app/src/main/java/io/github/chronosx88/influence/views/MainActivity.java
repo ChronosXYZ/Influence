@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.chronosx88.influence.R;
 import io.github.chronosx88.influence.contracts.CoreContracts;
+import io.github.chronosx88.influence.helpers.AppHelper;
 import io.github.chronosx88.influence.presenters.MainPresenter;
 import io.github.chronosx88.influence.views.fragments.DialogListFragment;
 import io.github.chronosx88.influence.views.fragments.SettingsFragment;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements CoreContracts.IMa
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
         presenter.initConnection();
+        AppHelper.setIsMainActivityDestroyed(false);
     }
 
     @Override

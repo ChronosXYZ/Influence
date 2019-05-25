@@ -17,6 +17,7 @@
 package io.github.chronosx88.influence.presenters
 
 import android.content.Intent
+import android.util.Log
 import io.github.chronosx88.influence.R
 import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.helpers.AppHelper
@@ -27,6 +28,7 @@ import io.github.chronosx88.influence.models.appEvents.NewChatEvent
 import io.github.chronosx88.influence.views.LoginActivity
 import java9.util.concurrent.CompletableFuture
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -74,6 +76,17 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
 
     override fun onStart() {
         EventBus.getDefault().register(this)
+        GlobalScope.launch {
+            var count = 0
+            while(AppHelper.getXmppConnection() == null && count <= 10) {
+                delay(1000)
+                count++
+            }
+            if(AppHelper.getXmppConnection() != null) {
+                AppHelper.getXmppConnection().sendUserPresence(Presence(Presence.Type.available))
+            }
+        }
+        AppHelper.setIsMainActivityDestroyed(false)
     }
 
     override fun onStop() {
@@ -82,10 +95,16 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
 
     override fun onDestroy() {
         GlobalScope.launch {
+            var count = 0
+            // Wait for connection will not be null
+            while(AppHelper.getXmppConnection() == null && count <= 10) {
+                delay(1000)
+                count++
+            }
             if(AppHelper.getXmppConnection() != null) {
-                if(AppHelper.getXmppConnection().isConnectionAlive)
-                    AppHelper.getXmppConnection().sendUserPresence(Presence(Presence.Type.unavailable))
+                AppHelper.getXmppConnection().sendUserPresence(Presence(Presence.Type.unavailable))
             }
         }
+        AppHelper.setIsMainActivityDestroyed(true)
     }
 }
