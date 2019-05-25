@@ -42,7 +42,7 @@ public class NetworkHandler implements IncomingChatMessageListener, PresenceEven
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
         String chatID = chat.getXmppAddressOfChatPartner().asUnescapedString();
         if(LocalDBWrapper.getChatByChatID(from.asEntityBareJidString()) == null) {
-            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString());
+            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0]);
         }
         long messageID = LocalDBWrapper.createMessageEntry(chatID, from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
         int newUnreadMessagesCount = LocalDBWrapper.getChatByChatID(chatID).unreadMessagesCount + 1;
