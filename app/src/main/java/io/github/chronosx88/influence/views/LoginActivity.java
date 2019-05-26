@@ -36,6 +36,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import io.github.chronosx88.influence.R;
 import io.github.chronosx88.influence.XMPPConnectionService;
 import io.github.chronosx88.influence.contracts.CoreContracts;
@@ -51,6 +54,7 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
     private TextInputLayout passwordInputLayout;
     private Button signInButton;
     private ProgressDialog progressDialog;
+    private Timer timer = new Timer(true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +159,23 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
             }
         });
         bindService(new Intent(this, XMPPConnectionService.class), AppHelper.getServiceConnection(), Context.BIND_AUTO_CREATE);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(AppHelper.getXmppConnection() != null) {
+                    if(AppHelper.getXmppConnection().isConnectionAlive()) {
+                        EventBus.getDefault().post(new AuthenticationStatusEvent(AuthenticationStatusEvent.CONNECT_AND_LOGIN_SUCCESSFUL));
+                    } else {
+                        EventBus.getDefault().post(new AuthenticationStatusEvent(AuthenticationStatusEvent.INCORRECT_LOGIN_OR_PASSWORD));
+                    }
+                } else {
+                    EventBus.getDefault().post(new AuthenticationStatusEvent(AuthenticationStatusEvent.NETWORK_ERROR));
+                }
+                timer.cancel();
+                timer.purge();
+                timer = new Timer();
+            }
+        }, 10000);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
