@@ -43,6 +43,8 @@ import io.github.chronosx88.influence.helpers.AppHelper;
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent;
 
 public class LoginActivity extends AppCompatActivity implements CoreContracts.ILoginViewContract {
+
+    // TODO MVP architecture
     private EditText jidEditText;
     private EditText passwordEditText;
     private TextInputLayout jidInputLayout;
