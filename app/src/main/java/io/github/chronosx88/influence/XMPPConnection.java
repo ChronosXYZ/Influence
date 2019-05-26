@@ -120,6 +120,7 @@ public class XMPPConnection implements ConnectionListener {
             roster = roster.getInstanceFor(connection);
             roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
             roster.addPresenceEventListener(networkHandler);
+            AppHelper.setJid(credentials.username + "@" + credentials.jabberHost);
             mamManager = MamManager.getInstanceFor(connection);
             try {
                 if(mamManager.isSupported()) {
