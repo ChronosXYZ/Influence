@@ -71,10 +71,7 @@ public class NetworkHandler implements IncomingChatMessageListener, PresenceEven
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
         String chatID = chat.getXmppAddressOfChatPartner().asUnescapedString();
         if(LocalDBWrapper.getChatByChatID(from.asEntityBareJidString()) == null) {
-            ArrayList<GenericUser> users = new ArrayList<>();
-            users.add(new GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()));
-            users.add(new GenericUser(chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString(), chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0], chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString()));
-            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0], users);
+            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0], new ArrayList<>());
         }
         long messageID = LocalDBWrapper.createMessageEntry(chatID, message.getStanzaId(), from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
         int newUnreadMessagesCount = LocalDBWrapper.getChatByChatID(chatID).unreadMessagesCount + 1;

@@ -148,10 +148,7 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
                 if(contacts != null) {
                     StreamSupport.stream(contacts).forEach(contact -> {
                         String chatID = contact.getJid().asUnescapedString();
-                        ArrayList<GenericUser> users = new ArrayList<>();
-                        users.add(new GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()));
-                        users.add(new GenericUser(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName(), chatID));
-                        LocalDBWrapper.createChatEntry(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName(), users);
+                        LocalDBWrapper.createChatEntry(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName(), new ArrayList<>());
                         GenericDialog dialog = new GenericDialog(LocalDBWrapper.getChatByChatID(chatID));
                         MessageEntity messageEntity = LocalDBWrapper.getLastMessage(chatID);
                         if(messageEntity != null) {

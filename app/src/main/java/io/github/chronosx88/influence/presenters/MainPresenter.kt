@@ -48,10 +48,7 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
             view.showSnackbar(AppHelper.getContext().getString(R.string.invalid_jid_error))
             return
         }
-        val users = ArrayList<GenericUser>()
-        users.add(GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()))
-        users.add(GenericUser(username, username.split("@")[0], AppHelper.getJid()))
-        LocalDBWrapper.createChatEntry(username, username.split("@")[0], users)
+        LocalDBWrapper.createChatEntry(username, username.split("@")[0], ArrayList<GenericUser>())
         EventBus.getDefault().post(NewChatEvent(username))
     }
 

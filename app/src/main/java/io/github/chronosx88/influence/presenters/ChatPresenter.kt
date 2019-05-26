@@ -17,6 +17,7 @@
 package io.github.chronosx88.influence.presenters
 
 import android.view.MenuItem
+import android.widget.Toast
 import com.google.gson.Gson
 import com.stfalcon.chatkit.messages.MessageHolders
 import com.stfalcon.chatkit.messages.MessagesListAdapter
@@ -56,7 +57,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         val holdersConfig = MessageHolders()
         holdersConfig.setIncomingTextLayout(R.layout.item_incoming_text_message_custom)
         chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader(view.getActivityObject()))
-        chatAdapter.setLoadMoreListener { page, _ -> loadMoreMessages() }
+        chatAdapter.setLoadMoreListener { _, _ -> loadMoreMessages() }
         view.setAdapter(chatAdapter)
         getUserStatus()
         EventBus.getDefault().register(this)
@@ -71,6 +72,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
             EventBus.getDefault().post(LastMessageEvent(chatEntity!!.jid, message))
             return true
         }
+        Toast.makeText(view.getActivityObject(), "Network error!", Toast.LENGTH_SHORT).show()
         return false
     }
 
