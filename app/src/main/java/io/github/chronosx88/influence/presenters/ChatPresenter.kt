@@ -33,18 +33,21 @@ import io.github.chronosx88.influence.models.appEvents.UserPresenceChangedEvent
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
 import java9.util.concurrent.CompletableFuture
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import java9.util.stream.StreamSupport
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import kotlin.math.log
+import org.jivesoftware.smackx.forward.packet.Forwarded
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class ChatPresenter(private val view: CoreContracts.IChatViewContract, private val chatID: String) : CoreContracts.IChatPresenterContract {
     private val logic: CoreContracts.IChatLogicContract
     private val chatEntity: ChatEntity?
     private val gson: Gson
     private val chatAdapter: MessagesListAdapter<GenericMessage>
+    private val messageComparator = Comparator<GenericMessage> { o1, o2 -> o1.createdAt.time.compareTo(o2.createdAt.time) }
 
     init {
         this.logic = ChatLogic(LocalDBWrapper.getChatByChatID(chatID)!!)
@@ -53,6 +56,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         val holdersConfig = MessageHolders()
         holdersConfig.setIncomingTextLayout(R.layout.item_incoming_text_message_custom)
         chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader())
+        chatAdapter.setLoadMoreListener { page, _ -> loadMoreMessages() }
         view.setAdapter(chatAdapter)
         getUserStatus()
         EventBus.getDefault().register(this)
@@ -70,13 +74,14 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
     }
 
     override fun loadLocalMessages() {
-        val entities: List<MessageEntity>? = LocalDBWrapper.getMessagesByChatID(chatID)
+        val entities = logic.loadLocalMessages()
         val messages = ArrayList<GenericMessage>()
         if(entities != null) {
             entities.forEach {
                 messages.add(GenericMessage(it))
             }
         }
+        messages.sortWith(messageComparator)
         chatAdapter.addToEnd(messages, true)
     }
 
@@ -120,6 +125,60 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
                 LocalDBWrapper.clearChat(chatID)
                 chatAdapter.clear()
                 EventBus.getDefault().post(LastMessageEvent(chatID, null))
+            }
+        }
+    }
+
+    override fun loadMoreMessages() {
+        logic.loadMessagesFromMAM().thenAccept { query ->
+            if(query != null) {
+                val adapterMessages = ArrayList<GenericMessage>()
+                StreamSupport.stream(query.page.forwarded)
+                        .forEach { forwardedMessage ->
+                            val message = Forwarded.extractMessagesFrom(Collections.singleton(forwardedMessage))[0]
+                            if(message.body != null) {
+                                if(LocalDBWrapper.getMessageByUID(message.stanzaId) == null) {
+                                    val messageID = LocalDBWrapper.createMessageEntry(chatID, message.stanzaId, message.from.asBareJid().asUnescapedString(), forwardedMessage.delayInformation.stamp.time, message.body, true, true)
+                                    adapterMessages.add(GenericMessage(LocalDBWrapper.getMessageByID(messageID)))
+                                }
+                            }
+                        }
+                AppHelper.getMainUIThread().post {
+                    adapterMessages.sortWith(messageComparator)
+                    chatAdapter.addToEnd(adapterMessages, true)
+                }
+                if(query.messageCount != 0) {
+                    chatEntity!!.firstMessageUid = query.mamResultExtensions[0].id
+                    LocalDBWrapper.updateChatEntity(chatEntity)
+                }
+            }
+        }
+    }
+
+    override fun loadRecentPageMessages() {
+        logic.loadRecentPageMessages().thenAccept { query ->
+            if(query != null) {
+                val adapterMessages = ArrayList<GenericMessage>()
+                StreamSupport.stream(query.page.forwarded)
+                        .forEach { forwardedMessage ->
+                            val message = Forwarded.extractMessagesFrom(Collections.singleton(forwardedMessage))[0]
+                            if(message.body != null) {
+                                if(LocalDBWrapper.getMessageByUID(message.stanzaId) == null) {
+                                    val messageID = LocalDBWrapper.createMessageEntry(chatID, message.stanzaId, message.from.asBareJid().asUnescapedString(), forwardedMessage.delayInformation.stamp.time, message.body, true, true)
+                                    adapterMessages.add(GenericMessage(LocalDBWrapper.getMessageByID(messageID)))
+                                }
+                            }
+                        }
+                AppHelper.getMainUIThread().post {
+                    adapterMessages.sortWith(messageComparator)
+                    adapterMessages.forEach {
+                        chatAdapter.addToStart(it, true)
+                    }
+                }
+                if(query.messageCount != 0 && chatEntity!!.firstMessageUid == "") {
+                    chatEntity.firstMessageUid = query.mamResultExtensions[0].id
+                    LocalDBWrapper.updateChatEntity(chatEntity)
+                }
             }
         }
     }

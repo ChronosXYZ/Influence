@@ -29,22 +29,30 @@ public class LocalDBWrapper {
     private static RoomHelper dbInstance = AppHelper.getChatDB();
 
     public static void createChatEntry(String jid, String chatName) {
-        dbInstance.chatDao().addChat(new ChatEntity(jid, chatName, new ArrayList<>(), 0));
+        dbInstance.chatDao().addChat(new ChatEntity(jid, chatName, new ArrayList<>(), 0, ""));
     }
 
-    public static long createMessageEntry(String jid, String senderJid, long timestamp, String text, boolean isSent, boolean isRead) {
-        List<ChatEntity> chatEntities = AppHelper.getChatDB().chatDao().getChatByChatID(jid);
+    public static long createMessageEntry(String chatID, String messageUid, String senderJid, long timestamp, String text, boolean isSent, boolean isRead) {
+        List<ChatEntity> chatEntities = AppHelper.getChatDB().chatDao().getChatByChatID(chatID);
         if(chatEntities.size() < 1) {
-            Log.e(LOG_TAG, "Failed to create message entry because chat " + jid + " doesn't exists!");
+            Log.e(LOG_TAG, "Failed to create message entry because chat " + chatID + " doesn't exists!");
             return -1;
         }
-        MessageEntity message = new MessageEntity(jid, senderJid, timestamp, text, isSent, isRead);
+        MessageEntity message = new MessageEntity(chatID, messageUid, senderJid, timestamp, text, isSent, isRead);
         long index = dbInstance.messageDao().insertMessage(message);
         return index;
     }
 
     public static MessageEntity getMessageByID(long messageID) {
         List<MessageEntity> messages = dbInstance.messageDao().getMessageByID(messageID);
+        if(messages.isEmpty()) {
+            return null;
+        }
+        return messages.get(0);
+    }
+
+    public static MessageEntity getMessageByUID(String messageUID) {
+        List<MessageEntity> messages = dbInstance.messageDao().getMessageByUID(messageUID);
         if(messages.isEmpty()) {
             return null;
         }
@@ -82,6 +90,11 @@ public class LocalDBWrapper {
 
     public static MessageEntity getLastMessage(String chatID) {
         long messageID = dbInstance.messageDao().getLastMessageByChatID(chatID);
+        return getMessageByID(messageID);
+    }
+
+    public static MessageEntity getFirstMessage(String chatID) {
+        long messageID = dbInstance.messageDao().getFirstMessageByChatID(chatID);
         return getMessageByID(messageID);
     }
 

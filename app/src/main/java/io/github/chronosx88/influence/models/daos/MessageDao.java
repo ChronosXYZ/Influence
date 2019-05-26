@@ -27,16 +27,16 @@ import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 
 @Dao
 public interface MessageDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     long insertMessage(MessageEntity chatModel);
 
     @Query("DELETE FROM messages WHERE messageID = :messageID")
     void deleteMessage(String messageID);
 
-    @Query("DELETE FROM messages WHERE jid = :jid")
+    @Query("DELETE FROM messages WHERE chatID = :jid")
     void deleteMessagesByChatID(String jid);
 
-    @Query("SELECT * FROM messages WHERE jid = :jid")
+    @Query("SELECT * FROM messages WHERE chatID = :jid")
     List<MessageEntity> getMessagesByChatID(String jid);
 
     @Query("SELECT * FROM messages WHERE messageID = :messageID")
@@ -48,9 +48,15 @@ public interface MessageDao {
     @Query("DELETE FROM messages")
     void clearMessages();
 
-    @Query("DELETE FROM messages WHERE jid = :chatID")
+    @Query("DELETE FROM messages WHERE chatID = :chatID")
     void clearMessagesByChatID(String chatID);
 
-    @Query("SELECT messageID FROM messages WHERE jid = :chatID GROUP BY :chatID HAVING MAX(messageID)")
+    @Query("SELECT messageID FROM messages WHERE chatID = :chatID GROUP BY :chatID HAVING MAX(timestamp)")
     long getLastMessageByChatID(String chatID);
+
+    @Query("SELECT messageID FROM messages WHERE chatID = :chatID GROUP BY :chatID HAVING MIN(timestamp)")
+    long getFirstMessageByChatID(String chatID);
+
+    @Query("SELECT * FROM messages WHERE messageUid = :uid")
+    List<MessageEntity> getMessageByUID(String uid);
 }

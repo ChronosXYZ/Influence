@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
 
     private void saveLoginCredentials() {
         AppHelper.getPreferences().edit()
-                .putString("jid", jidEditText.getText().toString())
+                .putString("chatID", jidEditText.getText().toString())
                 .putString("pass", passwordEditText.getText().toString())
                 .putBoolean("logged_in", true)
                 .apply();

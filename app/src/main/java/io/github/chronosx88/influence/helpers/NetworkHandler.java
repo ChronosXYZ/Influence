@@ -19,7 +19,6 @@ package io.github.chronosx88.influence.helpers;
 import com.instacart.library.truetime.TrueTime;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.PresenceListener;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
@@ -44,7 +43,7 @@ public class NetworkHandler implements IncomingChatMessageListener, PresenceEven
         if(LocalDBWrapper.getChatByChatID(from.asEntityBareJidString()) == null) {
             LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0]);
         }
-        long messageID = LocalDBWrapper.createMessageEntry(chatID, from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
+        long messageID = LocalDBWrapper.createMessageEntry(chatID, message.getStanzaId(), from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
         int newUnreadMessagesCount = LocalDBWrapper.getChatByChatID(chatID).unreadMessagesCount + 1;
         LocalDBWrapper.updateChatUnreadMessagesCount(chatID, newUnreadMessagesCount);
 

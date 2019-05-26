@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "b15f54b6ea1393c5d45bb222f98ed7d6",
+    "version": 3,
+    "identityHash": "b9b5e578f9222b641c833e4ba5e2378c",
     "entities": [
       {
         "tableName": "messages",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "chats",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`jid` TEXT NOT NULL, `chatName` TEXT, `users` TEXT, `unreadMessagesCount` INTEGER NOT NULL, PRIMARY KEY(`jid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`jid` TEXT NOT NULL, `chatName` TEXT, `users` TEXT, `unreadMessagesCount` INTEGER NOT NULL, `lastMessageUid` TEXT, PRIMARY KEY(`jid`))",
         "fields": [
           {
             "fieldPath": "jid",
@@ -93,6 +93,12 @@
             "columnName": "unreadMessagesCount",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "lastMessageUid",
+            "columnName": "lastMessageUid",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -108,7 +114,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b15f54b6ea1393c5d45bb222f98ed7d6\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b9b5e578f9222b641c833e4ba5e2378c\")"
     ]
   }
 }

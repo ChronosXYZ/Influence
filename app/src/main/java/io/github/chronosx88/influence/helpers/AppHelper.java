@@ -90,7 +90,7 @@ public class AppHelper extends MultiDexApplication {
 
     private static void loadLoginCredentials() {
         currentLoginCredentials = new LoginCredentials();
-        String jid = preferences.getString("jid", null);
+        String jid = preferences.getString("chatID", null);
         String password = preferences.getString("pass", null);
         if(jid != null && password != null) {
             String username = jid.split("@")[0];
@@ -104,7 +104,7 @@ public class AppHelper extends MultiDexApplication {
 
     public static void resetLoginCredentials() {
         currentLoginCredentials = new LoginCredentials();
-        preferences.edit().remove("jid").apply();
+        preferences.edit().remove("chatID").apply();
         preferences.edit().remove("pass").apply();
     }
 
@@ -126,6 +126,7 @@ public class AppHelper extends MultiDexApplication {
 
     private void initChatDB() {
         chatDB = Room.databaseBuilder(getApplicationContext(), RoomHelper.class, "chatDB")
+                .fallbackToDestructiveMigration() // FIXME   ONLY FOR TEST ENVIRONMENT! DON'T USE THIS IN PRODUCTION!
                 .allowMainThreadQueries()
                 .build();
     }

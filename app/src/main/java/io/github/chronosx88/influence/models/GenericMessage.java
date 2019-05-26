@@ -25,12 +25,14 @@ import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 
 public class GenericMessage implements IMessage {
     private long messageID;
+    private String messageUid;
     private IUser author;
     private long timestamp;
     private String text;
 
     public GenericMessage(MessageEntity messageEntity) {
         this.messageID = messageEntity.messageID;
+        this.messageUid = messageEntity.messageUid;
         this.author = new GenericUser(messageEntity.senderJid, messageEntity.senderJid, messageEntity.senderJid);
         this.timestamp = messageEntity.timestamp;
         this.text = messageEntity.text;
@@ -54,5 +56,9 @@ public class GenericMessage implements IMessage {
     @Override
     public Date getCreatedAt() {
         return new Date(timestamp);
+    }
+
+    public String getMessageUid() {
+        return messageUid;
     }
 }

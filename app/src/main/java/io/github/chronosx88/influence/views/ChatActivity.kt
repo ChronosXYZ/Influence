@@ -28,18 +28,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
-import com.stfalcon.chatkit.commons.ImageLoader
 import com.stfalcon.chatkit.messages.MessageInput
 import com.stfalcon.chatkit.messages.MessagesList
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import io.github.chronosx88.influence.R
 import io.github.chronosx88.influence.contracts.CoreContracts
-import io.github.chronosx88.influence.helpers.AppHelper
-import io.github.chronosx88.influence.helpers.LocalDBWrapper
 import io.github.chronosx88.influence.models.GenericMessage
-import io.github.chronosx88.influence.models.roomEntities.MessageEntity
 import io.github.chronosx88.influence.presenters.ChatPresenter
-import kotlinx.android.synthetic.main.activity_chat.view.*
 import org.jetbrains.anko.find
 
 class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
@@ -74,6 +69,7 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
         presenter = ChatPresenter(this, intent.getStringExtra("chatID"))
         loadAvatarFromIntent(intent)
         presenter!!.loadLocalMessages()
+        presenter!!.loadRecentPageMessages()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

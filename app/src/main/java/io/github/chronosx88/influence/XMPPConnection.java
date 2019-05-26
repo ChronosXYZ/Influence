@@ -72,7 +72,7 @@ public class XMPPConnection implements ConnectionListener {
     public XMPPConnection(Context context) {
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.context = context;
-        String jid = prefs.getString("jid", null);
+        String jid = prefs.getString("chatID", null);
         String password = prefs.getString("pass", null);
         if(jid != null && password != null) {
             String username = jid.split("@")[0];
@@ -124,6 +124,8 @@ public class XMPPConnection implements ConnectionListener {
             try {
                 if(mamManager.isSupported()) {
                     MamManager.getInstanceFor(connection).enableMamForAllMessages();
+                } else {
+                    mamManager = null;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -170,17 +172,19 @@ public class XMPPConnection implements ConnectionListener {
         e.printStackTrace();
     }
 
-    public void sendMessage(EntityBareJid recipientJid, String messageText) {
+    public String sendMessage(EntityBareJid recipientJid, String messageText) {
         Chat chat = ChatManager.getInstanceFor(connection).chatWith(recipientJid);
         try {
             Message message = new Message(recipientJid, Message.Type.chat);
             message.setBody(messageText);
             chat.send(message);
+            return message.getStanzaId();
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public XMPPTCPConnection getConnection() {
@@ -239,5 +243,12 @@ public class XMPPConnection implements ConnectionListener {
                 }
             }
         }
+    }
+
+    public MamManager getMamManager() {
+        if(isConnectionAlive()) {
+            return mamManager;
+        }
+        return null;
     }
 }

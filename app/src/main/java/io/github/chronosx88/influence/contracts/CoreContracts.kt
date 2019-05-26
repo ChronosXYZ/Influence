@@ -21,12 +21,13 @@ import android.content.Intent
 import android.view.MenuItem
 import com.stfalcon.chatkit.dialogs.DialogsListAdapter
 import com.stfalcon.chatkit.messages.MessagesListAdapter
-
 import io.github.chronosx88.influence.models.GenericDialog
 import io.github.chronosx88.influence.models.GenericMessage
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity
+import java9.util.concurrent.CompletableFuture
 import org.jivesoftware.smack.roster.RosterEntry
+import org.jivesoftware.smackx.mam.MamManager
 
 interface CoreContracts {
 
@@ -81,11 +82,16 @@ interface CoreContracts {
     interface IChatLogicContract {
         fun sendMessage(text: String): MessageEntity?
         fun getUserStatus(): Boolean
+        fun loadMessagesFromMAM(): CompletableFuture<MamManager.MamQuery?>
+        fun loadRecentPageMessages(): CompletableFuture<MamManager.MamQuery?>
+        fun loadLocalMessages(): List<MessageEntity>?
     }
 
     interface IChatPresenterContract {
         fun sendMessage(text: String): Boolean
         fun loadLocalMessages()
+        fun loadMoreMessages()
+        fun loadRecentPageMessages()
         fun onDestroy()
         fun onOptionsItemSelected(item: MenuItem)
     }
