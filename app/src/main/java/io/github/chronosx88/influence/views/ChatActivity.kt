@@ -69,7 +69,6 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
         presenter = ChatPresenter(this, intent.getStringExtra("chatID"))
         loadAvatarFromIntent(intent)
         presenter!!.loadLocalMessages()
-        presenter!!.loadRecentPageMessages()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -119,5 +118,8 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
         return true
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        presenter!!.loadRecentPageMessages()
+    }
 }

@@ -179,6 +179,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
                     chatEntity.firstMessageUid = query.mamResultExtensions[0].id
                     LocalDBWrapper.updateChatEntity(chatEntity)
                 }
+                EventBus.getDefault().post(LastMessageEvent(chatID, GenericMessage(LocalDBWrapper.getLastMessage(chatID))))
             }
         }
     }
