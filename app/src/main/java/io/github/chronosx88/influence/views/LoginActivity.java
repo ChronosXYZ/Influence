@@ -171,11 +171,8 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
                 } else {
                     EventBus.getDefault().post(new AuthenticationStatusEvent(AuthenticationStatusEvent.NETWORK_ERROR));
                 }
-                timer.cancel();
-                timer.purge();
-                timer = new Timer();
             }
-        }, 10000);
+        }, 6000);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
