@@ -27,4 +27,6 @@
     <string name="offline">Не в сети</string>
     <string name="online">В сети</string>
     <string name="clear_chat">Очистить чат</string>
+    <string name="notification_channel_name">Уведомления Influence</string>
+    <string name="notification_channel_desc">Уведомления чатов Influence</string>
 </resources>

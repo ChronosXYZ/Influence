@@ -52,6 +52,7 @@ public class AppHelper extends MultiDexApplication {
     private static Handler mainUIThreadHandler;
     private static ServiceConnection serviceConnection;
     private static boolean isMainActivityDestroyed = true;
+    private static String currentChatActivity = "";
     public final static Map<String, byte[]> avatarsCache = new ConcurrentHashMap<>();
 
     @Override
@@ -149,5 +150,13 @@ public class AppHelper extends MultiDexApplication {
 
     public static void setIsMainActivityDestroyed(boolean isMainActivityDestroyed) {
         AppHelper.isMainActivityDestroyed = isMainActivityDestroyed;
+    }
+
+    public static String getCurrentChatActivity() {
+        return currentChatActivity;
+    }
+
+    public static void setCurrentChatActivity(String currentChatActivity) {
+        AppHelper.currentChatActivity = currentChatActivity;
     }
 }

@@ -60,6 +60,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         view.setAdapter(chatAdapter)
         getUserStatus()
         EventBus.getDefault().register(this)
+        AppHelper.setCurrentChatActivity(chatID)
     }
 
     override fun sendMessage(text: String): Boolean {
@@ -87,6 +88,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
 
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
+        AppHelper.setCurrentChatActivity("")
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

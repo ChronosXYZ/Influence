@@ -26,4 +26,6 @@
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="clear_chat">Clear chat</string>
+    <string name="notification_channel_name">Influence Notifications</string>
+    <string name="notification_channel_desc">Influence chat notifications</string>
 </resources>
