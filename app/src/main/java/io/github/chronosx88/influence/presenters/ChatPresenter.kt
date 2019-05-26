@@ -55,7 +55,7 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         gson = Gson()
         val holdersConfig = MessageHolders()
         holdersConfig.setIncomingTextLayout(R.layout.item_incoming_text_message_custom)
-        chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader())
+        chatAdapter = MessagesListAdapter(AppHelper.getJid(), holdersConfig, AvatarImageLoader(view.getActivityObject()))
         chatAdapter.setLoadMoreListener { page, _ -> loadMoreMessages() }
         view.setAdapter(chatAdapter)
         getUserStatus()

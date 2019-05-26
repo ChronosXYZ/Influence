@@ -23,6 +23,7 @@ import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.helpers.AppHelper
 import io.github.chronosx88.influence.helpers.LocalDBWrapper
 import io.github.chronosx88.influence.logic.MainLogic
+import io.github.chronosx88.influence.models.GenericUser
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent
 import io.github.chronosx88.influence.models.appEvents.NewChatEvent
 import io.github.chronosx88.influence.views.LoginActivity
@@ -47,7 +48,10 @@ class MainPresenter(private val view: CoreContracts.IMainViewContract) : CoreCon
             view.showSnackbar(AppHelper.getContext().getString(R.string.invalid_jid_error))
             return
         }
-        LocalDBWrapper.createChatEntry(username, username.split("@")[0])
+        val users = ArrayList<GenericUser>()
+        users.add(GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()))
+        users.add(GenericUser(username, username.split("@")[0], AppHelper.getJid()))
+        LocalDBWrapper.createChatEntry(username, username.split("@")[0], users)
         EventBus.getDefault().post(NewChatEvent(username))
     }
 

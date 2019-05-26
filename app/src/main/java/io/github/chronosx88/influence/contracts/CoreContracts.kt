@@ -16,9 +16,11 @@
 
 package io.github.chronosx88.influence.contracts
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.MenuItem
+import androidx.fragment.app.Fragment
 import com.stfalcon.chatkit.dialogs.DialogsListAdapter
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import io.github.chronosx88.influence.models.GenericDialog
@@ -49,10 +51,11 @@ interface CoreContracts {
         fun loadRemoteContactList()
     }
 
-    interface IChatListViewContract {
+    interface IDialogListViewContract {
         fun setDialogAdapter(adapter: DialogsListAdapter<GenericDialog>)
         fun startActivity(intent: Intent)
         fun getActivityContext(): Context?
+        fun getFragmentObject(): Fragment
     }
 
     // -----MainActivity-----
@@ -99,6 +102,7 @@ interface CoreContracts {
     interface IChatViewContract {
         fun setAdapter(adapter: MessagesListAdapter<GenericMessage>)
         fun setUserStatus(status: String)
+        fun getActivityObject(): Activity
     }
 
     // -----SettingsFragment-----

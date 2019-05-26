@@ -16,26 +16,31 @@
 
 package io.github.chronosx88.influence.models;
 
+import androidx.annotation.Nullable;
+
 import com.stfalcon.chatkit.commons.models.IMessage;
 import com.stfalcon.chatkit.commons.models.IUser;
+import com.stfalcon.chatkit.commons.models.MessageContentType;
 
 import java.util.Date;
 
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 
-public class GenericMessage implements IMessage {
+public class GenericMessage implements IMessage, MessageContentType.Image {
     private long messageID;
-    private String messageUid;
     private IUser author;
     private long timestamp;
     private String text;
+    private String imageUrl;
 
     public GenericMessage(MessageEntity messageEntity) {
         this.messageID = messageEntity.messageID;
-        this.messageUid = messageEntity.messageUid;
         this.author = new GenericUser(messageEntity.senderJid, messageEntity.senderJid, messageEntity.senderJid);
         this.timestamp = messageEntity.timestamp;
         this.text = messageEntity.text;
+        if(messageEntity.text.contains("http") && messageEntity.text.contains(".jpg")) {
+            imageUrl = messageEntity.text;
+        }
     }
 
     @Override
@@ -58,7 +63,9 @@ public class GenericMessage implements IMessage {
         return new Date(timestamp);
     }
 
-    public String getMessageUid() {
-        return messageUid;
+    @Nullable
+    @Override
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

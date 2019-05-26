@@ -45,11 +45,13 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import io.github.chronosx88.influence.R;
 import io.github.chronosx88.influence.models.GenericMessage;
+import io.github.chronosx88.influence.models.GenericUser;
 import io.github.chronosx88.influence.models.appEvents.LastMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.NewMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.UserPresenceChangedEvent;
@@ -69,7 +71,10 @@ public class NetworkHandler implements IncomingChatMessageListener, PresenceEven
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
         String chatID = chat.getXmppAddressOfChatPartner().asUnescapedString();
         if(LocalDBWrapper.getChatByChatID(from.asEntityBareJidString()) == null) {
-            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0]);
+            ArrayList<GenericUser> users = new ArrayList<>();
+            users.add(new GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()));
+            users.add(new GenericUser(chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString(), chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0], chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString()));
+            LocalDBWrapper.createChatEntry(chatID, chat.getXmppAddressOfChatPartner().asBareJid().asUnescapedString().split("@")[0], users);
         }
         long messageID = LocalDBWrapper.createMessageEntry(chatID, message.getStanzaId(), from.asUnescapedString(), TrueTime.now().getTime(), message.getBody(), true, false);
         int newUnreadMessagesCount = LocalDBWrapper.getChatByChatID(chatID).unreadMessagesCount + 1;

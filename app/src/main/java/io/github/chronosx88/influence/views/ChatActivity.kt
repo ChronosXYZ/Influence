@@ -16,6 +16,7 @@
 
 package io.github.chronosx88.influence.views
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -121,5 +122,9 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
     override fun onResume() {
         super.onResume()
         presenter!!.loadRecentPageMessages()
+    }
+
+    override fun getActivityObject(): Activity {
+        return this
     }
 }

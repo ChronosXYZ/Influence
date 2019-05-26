@@ -21,6 +21,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.chronosx88.influence.models.GenericUser;
 import io.github.chronosx88.influence.models.roomEntities.ChatEntity;
 import io.github.chronosx88.influence.models.roomEntities.MessageEntity;
 
@@ -28,8 +29,8 @@ public class LocalDBWrapper {
     private static final String LOG_TAG = "LocalDBWrapper";
     private static RoomHelper dbInstance = AppHelper.getChatDB();
 
-    public static void createChatEntry(String jid, String chatName) {
-        dbInstance.chatDao().addChat(new ChatEntity(jid, chatName, new ArrayList<>(), 0, ""));
+    public static void createChatEntry(String jid, String chatName, ArrayList<GenericUser> users) {
+        dbInstance.chatDao().addChat(new ChatEntity(jid, chatName, users, 0, ""));
     }
 
     public static long createMessageEntry(String chatID, String messageUid, String senderJid, long timestamp, String text, boolean isSent, boolean isRead) {

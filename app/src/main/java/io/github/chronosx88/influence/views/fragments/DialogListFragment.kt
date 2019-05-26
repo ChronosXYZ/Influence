@@ -16,6 +16,7 @@
 
 package io.github.chronosx88.influence.views.fragments
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -30,7 +31,7 @@ import io.github.chronosx88.influence.models.GenericDialog
 import io.github.chronosx88.influence.presenters.DialogListPresenter
 
 
-class DialogListFragment : Fragment(), CoreContracts.IChatListViewContract {
+class DialogListFragment : Fragment(), CoreContracts.IDialogListViewContract {
     private lateinit var presenter: CoreContracts.IDialogListPresenterContract
     private lateinit var dialogList: DialogsList
 
@@ -61,5 +62,9 @@ class DialogListFragment : Fragment(), CoreContracts.IChatListViewContract {
     override fun onStop() {
         presenter.onStop()
         super.onStop()
+    }
+
+    override fun getFragmentObject(): Fragment {
+        return this
     }
 }

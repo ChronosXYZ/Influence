@@ -30,7 +30,7 @@ public class RoomTypeConverter {
 
     @TypeConverter
     public static ArrayList<GenericUser> fromString(String value) {
-        Type listType = new TypeToken<ArrayList<String>>() {}.getType();
+        Type listType = new TypeToken<ArrayList<GenericUser>>() {}.getType();
         return new Gson().fromJson(value, listType);
     }
 

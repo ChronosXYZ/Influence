@@ -38,6 +38,7 @@ import io.github.chronosx88.influence.helpers.LocalDBWrapper;
 import io.github.chronosx88.influence.logic.DialogListLogic;
 import io.github.chronosx88.influence.models.GenericDialog;
 import io.github.chronosx88.influence.models.GenericMessage;
+import io.github.chronosx88.influence.models.GenericUser;
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent;
 import io.github.chronosx88.influence.models.appEvents.LastMessageEvent;
 import io.github.chronosx88.influence.models.appEvents.NewChatEvent;
@@ -48,10 +49,9 @@ import java8.util.stream.StreamSupport;
 import java9.util.concurrent.CompletableFuture;
 
 public class DialogListPresenter implements CoreContracts.IDialogListPresenterContract {
-    private ConcurrentHashMap<String, byte[]> avatarsMap = new ConcurrentHashMap<>();
-    private CoreContracts.IChatListViewContract view;
+    private CoreContracts.IDialogListViewContract view;
     private CoreContracts.IDialogListLogicContract logic;
-    private DialogsListAdapter<GenericDialog> dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, new AvatarImageLoader());
+    private DialogsListAdapter<GenericDialog> dialogListAdapter;
     private Comparator<GenericDialog> dialogComparator = (dialog1, dialog2) -> {
         if(dialog2.getLastMessage() != null && dialog1.getLastMessage() != null) {
             return Long.compare(dialog2.getLastMessage().getCreatedAt().getTime(), dialog1.getLastMessage().getCreatedAt().getTime());
@@ -64,8 +64,9 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
         return 0;
     };
 
-    public DialogListPresenter(CoreContracts.IChatListViewContract view) {
+    public DialogListPresenter(CoreContracts.IDialogListViewContract view) {
         this.view = view;
+        dialogListAdapter = new DialogsListAdapter<>(R.layout.item_dialog_custom, new AvatarImageLoader(view.getFragmentObject()));
         dialogListAdapter.setOnDialogClickListener(dialog -> openChat(dialog.getId()));
         dialogListAdapter.setOnDialogLongClickListener(dialog -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getActivityContext());
@@ -147,7 +148,10 @@ public class DialogListPresenter implements CoreContracts.IDialogListPresenterCo
                 if(contacts != null) {
                     StreamSupport.stream(contacts).forEach(contact -> {
                         String chatID = contact.getJid().asUnescapedString();
-                        LocalDBWrapper.createChatEntry(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName());
+                        ArrayList<GenericUser> users = new ArrayList<>();
+                        users.add(new GenericUser(AppHelper.getJid(), AppHelper.getJid().split("@")[0], AppHelper.getJid()));
+                        users.add(new GenericUser(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName(), chatID));
+                        LocalDBWrapper.createChatEntry(chatID, contact.getName() == null ? contact.getJid().asUnescapedString().split("@")[0] : contact.getName(), users);
                         GenericDialog dialog = new GenericDialog(LocalDBWrapper.getChatByChatID(chatID));
                         MessageEntity messageEntity = LocalDBWrapper.getLastMessage(chatID);
                         if(messageEntity != null) {

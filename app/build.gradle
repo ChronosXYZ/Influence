@@ -84,6 +84,8 @@ dependencies {
     implementation 'net.sourceforge.streamsupport:android-retrofuture:1.7.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'org.igniterealtime.smack:smack-experimental:4.3.3'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 }
 repositories {
     mavenCentral()
