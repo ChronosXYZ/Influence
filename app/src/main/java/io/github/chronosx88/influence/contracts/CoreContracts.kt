@@ -103,6 +103,7 @@ interface CoreContracts {
         fun setAdapter(adapter: MessagesListAdapter<GenericMessage>)
         fun setUserStatus(status: String)
         fun getActivityObject(): Activity
+        fun showToast(text: String)
     }
 
     // -----SettingsFragment-----

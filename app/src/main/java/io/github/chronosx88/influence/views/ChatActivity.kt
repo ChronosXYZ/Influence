@@ -37,6 +37,7 @@ import io.github.chronosx88.influence.contracts.CoreContracts
 import io.github.chronosx88.influence.models.GenericMessage
 import io.github.chronosx88.influence.presenters.ChatPresenter
 import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 
 class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
     private var messageList: MessagesList? = null
@@ -126,5 +127,9 @@ class ChatActivity : AppCompatActivity(), CoreContracts.IChatViewContract {
 
     override fun getActivityObject(): Activity {
         return this
+    }
+
+    override fun showToast(text: String) {
+        toast(text)
     }
 }

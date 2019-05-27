@@ -16,6 +16,9 @@
 
 package io.github.chronosx88.influence.presenters
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.view.MenuItem
 import android.widget.Toast
 import com.google.gson.Gson
@@ -38,6 +41,7 @@ import java9.util.stream.StreamSupport
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.jetbrains.anko.toast
 import org.jivesoftware.smackx.forward.packet.Forwarded
 import java.util.*
 import kotlin.Comparator
@@ -62,6 +66,12 @@ class ChatPresenter(private val view: CoreContracts.IChatViewContract, private v
         getUserStatus()
         EventBus.getDefault().register(this)
         AppHelper.setCurrentChatActivity(chatID)
+        chatAdapter.setOnMessageLongClickListener {
+            val clipboard = AppHelper.getContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(it.text, it.text)
+            clipboard.primaryClip = clip
+            view.showToast(AppHelper.getContext().getString(R.string.copied_to_clipboard))
+        }
     }
 
     override fun sendMessage(text: String): Boolean {
