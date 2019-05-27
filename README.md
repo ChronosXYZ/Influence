@@ -1,7 +1,7 @@
 <p align="center">
 	<h1 align="center">Influence</h1>
 	<p align="center">
-	<i>The free from influence</i> <br><br>
+	<i>The free of influence</i> <br><br>
     	This is a simple, beautiful XMPP/Jabber client for Android.
   </p>
  </p>
@@ -38,9 +38,10 @@ $ cd Influence
 - 1:1 chats
 - Group chats *[coming soon]*
 - Avatars
-- Message history synchronization *[coming soon]*
+- Message history synchronization (MAM, XEP-313)
 - Managing Roster *[coming soon]*
-- User presences *[coming soon]*
+- User presences
+- OMEMO E2E Encryption *[coming soon]*
 
 <sub>[⇧ back to top](#contents)</sub>
 
