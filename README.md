@@ -1,13 +1,9 @@
 <p align="center">
 	<h1 align="center">Influence</h1>
 	<p align="center">
-<<<<<<< HEAD
 	<i>The free of influence</i> <br><br>
-=======
-	<i>The free from influence</i> <br><br>
-	    <img src="resources/icon.svg" alt="" height="59" width="">   
->>>>>>> Added icon and screenshots
-    	This is a simple, beautiful XMPP/Jabber client for Android.
+	<img src="resources/icon.svg" alt="" height="59" width=""><br>
+	This is a simple, beautiful XMPP/Jabber client for Android.
   </p>
  </p>
 
