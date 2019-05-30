@@ -40,18 +40,24 @@ $ cd Influence
 
 ## Features
 - 1:1 chats
-- Group chats *[coming soon]*
+- User presence
+- Showing images in chat (currently unstable)
 - Avatars
 - Message history synchronization (MAM, XEP-313)
-- Managing Roster *[coming soon]*
-- User presences
+- Background service
+- Notifications about new messages (currently unstable)
+- Group chats *[coming soon]*
+- Registration on XMPP servers *[coming soon]*
+- Multi-account support *[coming soon]*
+- Roster Managing *[coming soon]*
 - OMEMO E2E Encryption *[coming soon]*
+- Message Delivery Guarantee *[coming soon]*
 
 <sub>[⇧ back to top](#contents)</sub>
 
 ## Useful links
 
-- [Smack library GitHub](https://github.com/igniterealtime/Smack)
+- [Smack library GitHub](https://github.com/igniterealtime/Smack) - it is core library of this client.
 
 <sub>[⇧ back to top](#contents)</sub>
 
