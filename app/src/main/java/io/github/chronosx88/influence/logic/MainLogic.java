@@ -61,5 +61,8 @@ public class MainLogic implements CoreContracts.IMainLogicContract {
         AppHelper.resetLoginCredentials();
         context.unbindService(AppHelper.getServiceConnection());
         context.stopService(new Intent(context, XMPPConnectionService.class));
+        AppHelper.setXmppConnection(null);
+        AppHelper.setServiceConnection(null);
+        AppHelper.setJid(null);
     }
 }

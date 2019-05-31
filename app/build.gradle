@@ -86,6 +86,7 @@ dependencies {
     implementation 'org.igniterealtime.smack:smack-experimental:4.3.3'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation "de.adorsys.android:securestoragelibrary:1.0.3"
 }
 repositories {
     mavenCentral()

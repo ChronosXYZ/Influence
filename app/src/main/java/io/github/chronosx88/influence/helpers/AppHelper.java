@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.github.chronosx88.influence.LoginCredentials;
 import io.github.chronosx88.influence.XMPPConnection;
 
@@ -89,10 +90,10 @@ public class AppHelper extends MultiDexApplication {
         AppHelper.xmppConnection = xmppConnection;
     }
 
-    private static void loadLoginCredentials() {
+    public static void loadLoginCredentials() {
         currentLoginCredentials = new LoginCredentials();
-        String jid = preferences.getString("chatID", null);
-        String password = preferences.getString("pass", null);
+        String jid = SecurePreferences.getStringValue("jid", null);
+        String password = SecurePreferences.getStringValue("pass", null);
         if(jid != null && password != null) {
             String username = jid.split("@")[0];
             String jabberHost = jid.split("@")[1];
@@ -105,8 +106,9 @@ public class AppHelper extends MultiDexApplication {
 
     public static void resetLoginCredentials() {
         currentLoginCredentials = new LoginCredentials();
-        preferences.edit().remove("chatID").apply();
-        preferences.edit().remove("pass").apply();
+        SecurePreferences.removeValue("jid");
+        SecurePreferences.removeValue("pass");
+        SecurePreferences.removeValue("logged_in");
     }
 
     private static void initTrueTime() {
@@ -158,5 +160,9 @@ public class AppHelper extends MultiDexApplication {
 
     public static void setCurrentChatActivity(String currentChatActivity) {
         AppHelper.currentChatActivity = currentChatActivity;
+    }
+
+    public static LoginCredentials getCurrentLoginCredentials() {
+        return currentLoginCredentials;
     }
 }

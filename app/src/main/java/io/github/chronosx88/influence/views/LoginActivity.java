@@ -39,6 +39,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.github.chronosx88.influence.R;
 import io.github.chronosx88.influence.XMPPConnectionService;
 import io.github.chronosx88.influence.contracts.CoreContracts;
@@ -136,11 +137,9 @@ public class LoginActivity extends AppCompatActivity implements CoreContracts.IL
     }
 
     private void saveLoginCredentials() {
-        AppHelper.getPreferences().edit()
-                .putString("chatID", jidEditText.getText().toString())
-                .putString("pass", passwordEditText.getText().toString())
-                .putBoolean("logged_in", true)
-                .apply();
+        SecurePreferences.setValue("jid", jidEditText.getText().toString());
+        SecurePreferences.setValue("pass", passwordEditText.getText().toString());
+        SecurePreferences.setValue("logged_in", true);
     }
 
     private void doLogin() {

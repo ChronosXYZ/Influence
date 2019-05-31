@@ -17,10 +17,7 @@
 package io.github.chronosx88.influence;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
-
-import androidx.preference.PreferenceManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -40,11 +37,11 @@ import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.jid.impl.JidCreate;
 
 import java.io.IOException;
 import java.util.Set;
 
+import de.adorsys.android.securestoragelibrary.SecurePreferences;
 import io.github.chronosx88.influence.helpers.AppHelper;
 import io.github.chronosx88.influence.helpers.NetworkHandler;
 import io.github.chronosx88.influence.models.appEvents.AuthenticationStatusEvent;
@@ -53,7 +50,6 @@ public class XMPPConnection implements ConnectionListener {
     private final static String LOG_TAG = "XMPPConnection";
     private LoginCredentials credentials = new LoginCredentials();
     private XMPPTCPConnection connection = null;
-    private SharedPreferences prefs;
     private NetworkHandler networkHandler;
     private Context context;
     private Roster roster;
@@ -70,10 +66,9 @@ public class XMPPConnection implements ConnectionListener {
     }
 
     public XMPPConnection(Context context) {
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.context = context;
-        String jid = prefs.getString("chatID", null);
-        String password = prefs.getString("pass", null);
+        String jid = SecurePreferences.getStringValue("jid", null);
+        String password = SecurePreferences.getStringValue("pass", null);
         if(jid != null && password != null) {
             String username = jid.split("@")[0];
             String jabberHost = jid.split("@")[1];
@@ -138,7 +133,7 @@ public class XMPPConnection implements ConnectionListener {
     }
 
     public void disconnect() {
-        prefs.edit().putBoolean("logged_in", false).apply();
+        SecurePreferences.setValue("logged_in", false);
         if(connection != null) {
             connection.disconnect();
             connection = null;
@@ -153,7 +148,7 @@ public class XMPPConnection implements ConnectionListener {
     @Override
     public void authenticated(org.jivesoftware.smack.XMPPConnection connection, boolean resumed) {
         XMPPConnectionService.SESSION_STATE = SessionState.LOGGED_IN;
-        prefs.edit().putBoolean("logged_in", true).apply();
+        SecurePreferences.setValue("logged_in", true);
         EventBus.getDefault().post(new AuthenticationStatusEvent(AuthenticationStatusEvent.CONNECT_AND_LOGIN_SUCCESSFUL));
     }
 
@@ -161,14 +156,14 @@ public class XMPPConnection implements ConnectionListener {
     public void connectionClosed() {
         XMPPConnectionService.CONNECTION_STATE = ConnectionState.DISCONNECTED;
         XMPPConnectionService.SESSION_STATE = SessionState.LOGGED_OUT;
-        prefs.edit().putBoolean("logged_in", false).apply();
+        SecurePreferences.setValue("logged_in", false);
     }
 
     @Override
     public void connectionClosedOnError(Exception e) {
         XMPPConnectionService.CONNECTION_STATE = ConnectionState.DISCONNECTED;
         XMPPConnectionService.SESSION_STATE = SessionState.LOGGED_OUT;
-        prefs.edit().putBoolean("logged_in", false).apply();
+        SecurePreferences.setValue("logged_in", false);
         Log.e(LOG_TAG, "Connection closed, exception occurred");
         e.printStackTrace();
     }

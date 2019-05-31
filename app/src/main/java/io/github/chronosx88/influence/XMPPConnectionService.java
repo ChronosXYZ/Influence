@@ -109,7 +109,6 @@ public class XMPPConnectionService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         onServiceStop();
     }
 
