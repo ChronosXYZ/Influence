@@ -1,6 +1,3 @@
-# WARNING! PROJECT IS NOT MAINTAINING ANYMORE
-
-
 <p align="center">
 	<h1 align="center">Influence</h1>
 	<p align="center">
