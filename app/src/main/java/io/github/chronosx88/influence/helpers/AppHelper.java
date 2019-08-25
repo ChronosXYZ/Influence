@@ -105,10 +105,11 @@ public class AppHelper extends MultiDexApplication {
     }
 
     public static void resetLoginCredentials() {
-        currentLoginCredentials = new LoginCredentials();
-        SecurePreferences.removeValue("jid");
-        SecurePreferences.removeValue("pass");
-        SecurePreferences.removeValue("logged_in");
+        currentLoginCredentials = null;
+        preferences.edit().remove("chatID")
+                .remove("pass")
+                .remove("logged_in")
+                .apply();
     }
 
     private static void initTrueTime() {
