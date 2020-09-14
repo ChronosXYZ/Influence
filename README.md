@@ -1,9 +1,10 @@
 <p align="center">
 	<h1 align="center">Influence</h1>
 	<p align="center">
+	<b>WARNING! This project is not maintained anymore!</b><br><br>
 	<i>The free of influence</i> <br><br>
 	<img src="resources/icon.svg" alt="" height="59" width=""><br>
-	This is a simple, beautiful XMPP/Jabber client for Android.
+	This is a simple, beautiful XMPP/Jabber client for Android.<br>
   </p>
  </p>
 
